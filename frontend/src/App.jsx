@@ -35,7 +35,7 @@ export default function App() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('https://booking-bar-na-dne.onrender.com', {
+      const response = await axios.post('https://booking-bar-na-dne.onrender.com/api/chat', {
         message: text,
         history: messages.map(m => ({ role: m.role, content: m.content }))
       });
