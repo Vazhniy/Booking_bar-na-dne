@@ -6,10 +6,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Твои ключи
-const GEMINI_API_KEY = 'AIzaSyDOtvTjvixtBG03Q4dFS3f6IQrGclghC58';
-const TELEGRAM_TOKEN = '8362776296:AAHHeYmAtEartQp1F6IOZSddrTeExamCD7U';
-const CHAT_ID = '603112186';
+// Теперь мы берем ключи из "окружения" сервера
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
+const CHAT_ID = process.env.CHAT_ID;
 
 const systemPrompt = `Ты — бармен богемной рюмочной "На дне" на Зыбицкой. 
 Твой стиль: харизматичный, экспертный. Интерьер: руин-бар, портрет Горького, бабушкин сервиз, шлем водолаза.
@@ -69,5 +69,6 @@ app.post('/api/chat', async (req, res) => {
         res.status(500).json({ reply: "Что-то Горький хмурится... Попробуй отправить сообщение еще раз!" });
     }
 });
+
 
 app.listen(5000, () => console.log('✅ Сервер "На дне" готов к работе на порту 5000'));
