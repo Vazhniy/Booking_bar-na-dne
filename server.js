@@ -10,14 +10,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Забираем ключи из настроек Render
+// Забираем ключи
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const CHAT_ID = process.env.CHAT_ID;
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-// Характер нашего веселого бармена
+// Характер бармена
 const SYSTEM_PROMPT = `
 Ты — невероятно харизматичный, веселый и свой в доску бармен руин-бара «На дне» на Зыбицкой. 
 Твой стиль: френдли сервис, остроумие, легкая ирония и атмосфера бесконечной тусовки. Ты общаешься с гостем как с давним приятелем, который зашел на шот.
@@ -37,7 +37,6 @@ const model = genAI.getGenerativeModel({
     systemInstruction: SYSTEM_PROMPT
 });
 
-// Функция отправки в Telegram
 async function sendToTelegram(bookingData) {
     const text = `🔔 **НОВАЯ БРОНЬ "НА ДНЕ"**\n\n` +
                  `👤 Данные: ${bookingData}\n` +
@@ -51,10 +50,16 @@ async function sendToTelegram(bookingData) {
         });
         console.log('✅ Бронь успешно улетела в Telegram');
     } catch (error) {
-        // Выводим детальную ошибку, если токен или чат указаны неверно
         console.error('❌ Ошибка Telegram:', error.response?.data || error.message);
     }
 }
+
+// === ТОТ САМЫЙ БУДИЛЬНИК (Лимиты Gemini в безопасности!) ===
+app.get('/ping', (req, res) => {
+    // Сервер просто отвечает текстушкой и всё. ИИ здесь не работает.
+    res.status(200).send('Бармен на месте, стаканы протерты!');
+});
+// ==========================================================
 
 app.post('/api/chat', async (req, res) => {
     const { message, history } = req.body;
@@ -65,7 +70,6 @@ app.post('/api/chat', async (req, res) => {
             parts: [{ text: msg.text }]
         }));
 
-        // Удаляем стартовое сообщение, чтобы Google не ругался
         if (formattedHistory.length > 0 && formattedHistory[0].role === 'model') {
             formattedHistory.shift();
         }
@@ -77,7 +81,6 @@ app.post('/api/chat', async (req, res) => {
         const result = await chat.sendMessage(message);
         const botResponse = result.response.text();
 
-        // Ловим кодовую фразу
         if (botResponse.toLowerCase().includes("бронь принята")) {
             await sendToTelegram(message);
         }
