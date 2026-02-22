@@ -1,194 +1,212 @@
-:root {
-  --bg-color: #0f0c1d; 
-  --glass-white: rgba(255, 255, 255, 0.08);
-  --accent-soft-purple: #d1b3ff;
-  /* Добавим наш фирменный желтый для штампа */
-  --stamp-yellow: #ffea00; 
-  --text-main: #f0eaff;
-  --bot-bubble: rgba(255, 255, 255, 0.05);
-  --user-bubble: rgba(209, 179, 255, 0.3);
-}
-
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
-
-html, body, #root {
-  height: 100dvh;
+/* === БАЗОВЫЕ НАСТРОЙКИ === */
+body {
   margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background: var(--bg-color);
-  background-image: radial-gradient(circle at 50% 0%, #2a1b4d 0%, #0f0c1d 70%);
-  font-family: -apple-system, system-ui, sans-serif;
-  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', sans-serif;
+  background-color: #121212; 
+  color: #ffffff;
 }
 
 .app-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  max-width: 500px;
+  height: 100vh;
+  max-width: 600px;
   margin: 0 auto;
+  background-color: #1e1e1e;
   position: relative;
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
 
-/* --- Шапка --- */
+/* === ШАПКА БАРА === */
 .header {
-  padding: 12px 20px; /* Чуть уменьшил отступы */
-  background: var(--glass-white);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  z-index: 10;
+  background-color: #000000;
+  padding: 15px 20px;
+  border-bottom: 2px solid #ff4500;
 }
 
 .header-content {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 15px;
 }
 
-/* --- НОВЫЕ СТИЛИ ДЛЯ CSS-ШТАМПА --- */
-.css-logo-stamp {
-  width: 55px;
-  height: 55px;
-  background-color: var(--stamp-yellow);
-  border-radius: 50%; /* Делаем круг */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: black;
-  font-weight: 900;
-  line-height: 0.9;
-  font-size: 14px;
-  transform: rotate(-5deg); /* Легкий наклон как у штампа */
-  
-  /* Эмуляция грубой границы и текстуры через тени */
-  border: 3px solid black;
-  box-shadow: 
-    inset 0 0 0 2px var(--stamp-yellow), /* Внутренний отступ */
-    inset 0 0 0 4px black, /* Вторая внутренняя рамка */
-    0 0 10px rgba(255, 234, 0, 0.3); /* Внешнее свечение */
-    
-  /* Небольшой шум через градиент */
-  background-image: radial-gradient(black 10%, transparent 10%);
-  background-size: 3px 3px;
-  background-blend-mode: soft-light;
-}
-
-.css-logo-stamp span {
-    display: block;
-    /* Небольшое искажение текста */
-    transform: skewX(-2deg); 
-}
-/* ---------------------------------- */
-
-
-/* Старый стиль .logo удаляем, он больше не нужен */
-/* .logo { ... } */
-
-.header-text {
-  display: flex;
-  flex-direction: column;
+.logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 15px;
+  border: 1px solid #ff4500;
 }
 
 .bar-title {
   margin: 0;
-  font-size: 18px;
-  font-weight: 500; 
-  color: var(--accent-soft-purple);
-  text-transform: none; 
-  letter-spacing: 0.5px;
+  font-size: 1.3rem;
+  color: #ff4500;
 }
 
 .bar-address {
   margin: 0;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  color: #aaaaaa;
 }
 
-/* --- Чат --- */
+/* === ЧАТ === */
 .chat-window {
   flex: 1;
+  padding: 20px;
   overflow-y: auto;
-  padding: 25px 15px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 15px;
 }
 
 .message {
-  max-width: 82%;
-  padding: 12px 18px;
-  border-radius: 22px;
-  font-size: 16px;
-  line-height: 1.5;
-  backdrop-filter: blur(5px);
+  padding: 12px 16px;
+  border-radius: 12px;
+  max-width: 85%;
+  word-wrap: break-word;
+  line-height: 1.4;
+  font-size: 1rem;
 }
 
-.bot {
+.message.bot {
+  background-color: #2c2c2c;
+  color: #fff;
   align-self: flex-start;
-  background: var(--bot-bubble);
-  color: #e0d5ff;
-  border-bottom-left-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom-left-radius: 2px;
+  white-space: pre-wrap;
 }
 
-.user {
+.message.user {
+  background-color: #ff4500; 
+  color: #fff;
   align-self: flex-end;
-  background: var(--user-bubble);
-  color: #ffffff;
-  border-bottom-right-radius: 4px;
-  border: 1px solid rgba(209, 179, 255, 0.2);
+  border-bottom-right-radius: 2px;
 }
 
-/* --- Ввод --- */
+/* === ПОЛЕ ВВОДА === */
 .input-area {
-  padding: 15px;
-  background: var(--glass-white);
-  backdrop-filter: blur(20px);
   display: flex;
-  gap: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 15px;
+  background-color: #000000;
+  border-top: 1px solid #333;
+  align-items: center;
 }
 
 .input-wrapper {
   flex: 1;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 10px 18px;
-  border-radius: 25px;
+  margin-right: 10px;
 }
 
-input {
+.input-wrapper input {
   width: 100%;
-  background: transparent;
-  border: none;
-  color: white;
-  font-size: 16px;
+  padding: 14px 20px;
+  border-radius: 25px;
+  border: 1px solid #444;
+  background-color: #2c2c2c;
+  color: #fff;
   outline: none;
+  font-size: 1rem;
+  transition: 0.2s;
+  box-sizing: border-box;
+}
+
+.input-wrapper input:focus {
+  border-color: #ff4500;
 }
 
 .send-btn {
-  background: var(--accent-soft-purple);
+  background-color: #ff4500;
   border: none;
-  width: 44px;
-  height: 44px;
   border-radius: 50%;
-  cursor: pointer;
+  width: 48px;
+  height: 48px;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.send-btn:active {
+  transform: scale(0.9);
 }
 
 .send-btn svg {
-  fill: #2a1b4d;
   width: 20px;
   height: 20px;
+  fill: #fff;
+}
+
+/* === СТИЛИ РУЛЕТКИ === */
+.roulette-container {
+  background: #1e1e1e;
+  border: 2px solid #ff4500;
+  border-radius: 15px;
+  padding: 15px;
+  margin: 10px 0;
+  text-align: center;
+  color: white;
+  align-self: flex-start;
+  width: 100%;
+  max-width: 300px;
+}
+
+.roulette-container h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #ff4500;
+}
+
+.roulette-container p {
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.roulette-box {
+  background: #000;
+  color: #ff4500;
+  font-size: 1.3rem;
+  font-weight: bold;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.2s;
+  border: 1px solid #333;
+}
+
+.roulette-box.spinning {
+  animation: pulse 0.1s infinite;
+  color: #fff;
+}
+
+.roulette-box.done {
+  background: #ff4500;
+  color: #fff;
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(255, 69, 0, 0.6);
+  border: none;
+}
+
+.spin-btn {
+  background: #ff4500;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.spin-btn:active {
+  transform: scale(0.95);
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
 }
