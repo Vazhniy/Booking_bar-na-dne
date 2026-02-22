@@ -41,7 +41,7 @@ function App() {
       <header className="header">
         <div className="header-content">
           
-          {/* Обертка для круглого текстурированного фона */}
+          {/* Обертка обрезает картинку по кругу */}
           <div className="logo-wrapper">
             <img src="/logo.png" alt="Лого" className="logo" />
           </div>
