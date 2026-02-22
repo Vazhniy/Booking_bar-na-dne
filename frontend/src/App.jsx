@@ -16,7 +16,7 @@ function App() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(scrollToBottom, [messages]);
+  useEffect(scrollToBottom, [messages, loading]); // Добавили loading в зависимости
 
   const handleSend = async () => {
     if (!input.trim() || loading) return;
@@ -29,7 +29,7 @@ function App() {
     try {
       const response = await axios.post(`${RENDER_URL}/api/chat`, {
         message: input,
-        history: messages
+        history: messages.map(m => ({role: m.role, text: m.text})) // Чистим историю перед отправкой
       });
       setMessages(prev => [...prev, { role: 'bot', text: response.data.text }]);
     } catch (error) {
@@ -41,7 +41,10 @@ function App() {
 
   return (
     <div className="app-container">
-      <button className="wheel-btn" onClick={() => alert('Колесо скоро будет готово!')}>🎡 Скидка</button>
+      {/* Кнопка с иконкой */}
+      <button className="wheel-btn" onClick={() => alert('Колесо скоро будет готово!')}>
+        <span className="wheel-icon">🎡</span> Скидка
+      </button>
       
       <header className="header">
         <img src="/logo.png" alt="На дне" className="logo" />
@@ -53,7 +56,16 @@ function App() {
             {msg.text}
           </div>
         ))}
-        {loading && <div className="message bot">Печатает...</div>}
+        
+        {/* Новый анимированный индикатор печати */}
+        {loading && (
+          <div className="message bot typing-indicator">
+            <div className="dot"></div>
+            <div className="dot"></div>
+            <div className="dot"></div>
+          </div>
+        )}
+        
         <div ref={chatEndRef} />
       </div>
 
@@ -65,7 +77,12 @@ function App() {
           onKeyPress={(e) => e.key === 'Enter' && handleSend()}
           placeholder="Напиши бармену..."
         />
-        <button className="send-btn" onClick={handleSend}>➜</button>
+        <button className="send-btn" onClick={handleSend} disabled={loading}>
+          {/* SVG иконка стрелки */}
+          <svg className="send-icon" viewBox="0 0 24 24">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </button>
       </div>
     </div>
   );
