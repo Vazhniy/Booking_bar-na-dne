@@ -1,13 +1,9 @@
 :root {
   --bg-dark: #0a0a0a;
-  --bg-gradient: radial-gradient(circle at top right, #1a1a1a, #050505 80%);
-  --accent-yellow: #ffea00; /* Тот самый неоновый желтый */
+  --accent-yellow: #ffea00; /* Неоновый желтый */
   --accent-glow: 0 0 15px rgba(255, 234, 0, 0.4);
-  --glass-bg: rgba(20, 20, 20, 0.85);
+  --glass-bg: rgba(20, 20, 20, 0.9);
   --text-white: #ffffff;
-  
-  --bot-msg-bg: #1e1e1e;
-  --user-msg-bg: #ffea00;
 }
 
 * {
@@ -21,8 +17,6 @@ html, body, #root {
   padding: 0;
   overflow: hidden;
   background: var(--bg-dark);
-  background-image: var(--bg-gradient);
-  color: var(--text-white);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -33,17 +27,18 @@ html, body, #root {
   max-width: 500px;
   margin: 0 auto;
   position: relative;
+  /* Учет челки iPhone */
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* --- Header --- */
+/* --- Header с лого и адресом --- */
 .header {
   padding: 15px 20px;
   background: var(--glass-bg);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
-  border-bottom: 1px solid rgba(255, 234, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 234, 0, 0.3);
   z-index: 10;
 }
 
@@ -55,9 +50,10 @@ html, body, #root {
 }
 
 .logo {
-  height: 50px;
+  height: 55px;
   width: auto;
-  filter: drop-shadow(0 0 10px rgba(255, 234, 0, 0.5));
+  /* Убираем визуальный шум логотипа */
+  filter: drop-shadow(0 0 8px rgba(255, 234, 0, 0.5));
 }
 
 .header-text {
@@ -67,7 +63,7 @@ html, body, #root {
 
 .bar-title {
   margin: 0;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 900;
   color: var(--accent-yellow);
   text-transform: uppercase;
@@ -77,12 +73,12 @@ html, body, #root {
 
 .bar-address {
   margin: 0;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
   font-weight: 500;
 }
 
-/* --- Chat --- */
+/* --- Чат --- */
 .chat-window {
   flex: 1;
   overflow-y: auto;
@@ -90,7 +86,6 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  -webkit-overflow-scrolling: touch;
 }
 
 .message {
@@ -99,46 +94,37 @@ html, body, #root {
   border-radius: 20px;
   font-size: 16px;
   line-height: 1.4;
-  animation: slideIn 0.3s ease-out;
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 .bot {
   align-self: flex-start;
-  background: var(--bot-msg-bg);
+  background: #222;
   color: white;
   border-bottom-left-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .user {
   align-self: flex-end;
-  background: var(--user-msg-bg);
+  background: var(--accent-yellow);
   color: black;
   font-weight: 600;
   border-bottom-right-radius: 4px;
   box-shadow: var(--accent-glow);
 }
 
-/* --- Input --- */
+/* --- Ввод --- */
 .input-area {
   padding: 15px;
   background: var(--glass-bg);
-  backdrop-filter: blur(15px);
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   gap: 10px;
-  align-items: center;
 }
 
 input {
   flex: 1;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1a1a1a;
+  border: 1px solid #333;
   padding: 12px 20px;
   border-radius: 25px;
   color: white;
@@ -148,7 +134,6 @@ input {
 input:focus {
   outline: none;
   border-color: var(--accent-yellow);
-  box-shadow: var(--accent-glow);
 }
 
 .send-btn {
@@ -157,31 +142,8 @@ input:focus {
   width: 45px;
   height: 45px;
   border-radius: 50%;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--accent-glow);
-  cursor: pointer;
-}
-
-.send-btn svg {
-  width: 20px;
-  height: 20px;
-  fill: black;
-}
-
-/* Колесо */
-.wheel-btn {
-  position: absolute;
-  top: 90px;
-  right: 15px;
-  background: #ff4444;
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 20px;
-  font-weight: bold;
-  font-size: 12px;
-  z-index: 5;
-  box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
 }
