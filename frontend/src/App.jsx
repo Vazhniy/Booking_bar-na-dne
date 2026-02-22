@@ -1,3 +1,4 @@
+// frontend/src/App.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -47,8 +48,6 @@ function App() {
           </div>
         </div>
       </header>
-
-      <button className="wheel-btn">🎡 КРУТИТЬ</button>
 
       <div className="chat-window">
         {messages.map((msg, i) => (
