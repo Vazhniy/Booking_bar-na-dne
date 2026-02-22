@@ -63,3 +63,33 @@ app.post('/api/chat', async (req, res) => {
         let formattedHistory = history.map(msg => ({
             role: msg.role === 'bot' ? 'model' : 'user',
             parts: [{ text: msg.text }]
+        }));
+
+        // Удаляем стартовое сообщение, чтобы Google не ругался
+        if (formattedHistory.length > 0 && formattedHistory[0].role === 'model') {
+            formattedHistory.shift();
+        }
+
+        const chat = model.startChat({
+            history: formattedHistory
+        });
+
+        const result = await chat.sendMessage(message);
+        const botResponse = result.response.text();
+
+        // Ловим кодовую фразу
+        if (botResponse.toLowerCase().includes("бронь принята")) {
+            await sendToTelegram(message);
+        }
+
+        res.json({ text: botResponse });
+    } catch (error) {
+        console.error('Ошибка Gemini:', error);
+        res.status(500).json({ text: 'Упс, бармен отвлекся на наливку. Повтори-ка!' });
+    }
+});
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`✅ Сервер "На дне" запущен на порту ${PORT}`);
+});
