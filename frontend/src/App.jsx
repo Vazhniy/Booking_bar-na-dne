@@ -1,4 +1,3 @@
-// frontend/src/App.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -7,7 +6,7 @@ const RENDER_URL = 'https://booking-bar-na-dne.onrender.com';
 
 function App() {
   const [messages, setMessages] = useState([
-    { role: 'bot', text: 'Привет! Это бар «На дне». Чтобы забронировать стол, напиши мне своё имя, время и телефон. Keri и Shchavlik уже ждут!' }
+    { role: 'bot', text: 'Привет! "На дне" на связи. 🥂 Готовим инфузии от Keri и Shchavlik. Как тебя зовут и во сколько ждать?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -31,7 +30,7 @@ function App() {
       });
       setMessages(prev => [...prev, { role: 'bot', text: response.data.text }]);
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'bot', text: 'Ошибка связи. Попробуй еще раз.' }]);
+      setMessages(prev => [...prev, { role: 'bot', text: 'Бармен занят Cherribos. Попробуй еще раз!' }]);
     } finally {
       setLoading(false);
     }
@@ -55,18 +54,20 @@ function App() {
             {msg.text}
           </div>
         ))}
-        {loading && <div className="message bot" style={{opacity: 0.5}}>Печатает...</div>}
+        {loading && <div className="message bot" style={{opacity: 0.5}}>Наливаем ответ...</div>}
         <div ref={chatEndRef} />
       </div>
 
       <div className="input-area">
-        <input 
-          type="text" 
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-          placeholder="Напиши бармену..."
-        />
+        <div className="input-wrapper">
+          <input 
+            type="text" 
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+            placeholder="Напиши бармену..."
+          />
+        </div>
         <button className="send-btn" onClick={handleSend} disabled={loading}>
           <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
