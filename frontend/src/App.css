@@ -51,43 +51,27 @@ html, body, #root {
   gap: 15px;
 }
 
-/* --- НОВЫЙ КРУГЛЫЙ ФОН ДЛЯ ЛОГОТИПА --- */
+/* --- ИСПРАВЛЕННЫЙ ЛОГОТИП (ПРОЗРАЧНЫЙ КРУГ) --- */
 .logo-wrapper {
-  position: relative;
   width: 52px;
   height: 52px;
-  border-radius: 50%; /* Делаем идеальный круг */
-  background: radial-gradient(circle at top left, rgba(209, 179, 255, 0.2), rgba(209, 179, 255, 0.02));
-  box-shadow: 
-    0 4px 10px rgba(0, 0, 0, 0.3), /* Внешняя тень */
-    inset 0 1px 3px rgba(255, 255, 255, 0.2); /* Внутренний блик */
-  border: 1px solid rgba(209, 179, 255, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  border-radius: 50%; /* Форма круга */
+  overflow: hidden; /* Обрезает все, что выходит за круг */
   flex-shrink: 0;
-}
-
-/* Текстура шума внутри круга */
-.logo-wrapper::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.15"/></svg>');
-  mix-blend-mode: overlay;
-  pointer-events: none;
-  border-radius: 50%;
+  /* Тонкая рамка для четкости */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  /* ВАЖНО: Убрали background и box-shadow */
 }
 
 /* Сама твоя картинка */
 .logo {
-  width: 85%; /* Чуть меньше контейнера */
-  height: 85%;
-  object-fit: contain;
-  mix-blend-mode: multiply; /* Убивает белый квадрат вокруг кляксы */
-  filter: brightness(1.2); /* Делает черную кляксу четче на фиолетовом */
-  z-index: 2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Заполняет весь круг */
+  /* ЭТА МАГИЯ УБИРАЕТ БЕЛЫЙ ЦВЕТ: */
+  mix-blend-mode: multiply;
+  /* Опционально: можно сделать черную кляксу чуть ярче/контрастнее */
+  /* filter: contrast(1.2); */
 }
 /* -------------------------------------- */
 
