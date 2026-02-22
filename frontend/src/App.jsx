@@ -6,7 +6,7 @@ const RENDER_URL = 'https://booking-bar-na-dne.onrender.com';
 
 function App() {
   const [messages, setMessages] = useState([
-    { role: 'bot', text: 'Привет! "На дне" на связи. 🥂 Готовим инфузии от Keri и Shchavlik. Как тебя зовут и во сколько ждать?' }
+    { role: 'bot', text: 'Здорово! "На дне" на связи. 🥂 Keri и Shchavlik уже готовят инфузии. Как тебя зовут и когда ждать?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -30,7 +30,7 @@ function App() {
       });
       setMessages(prev => [...prev, { role: 'bot', text: response.data.text }]);
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'bot', text: 'Бармен занят Cherribos. Попробуй еще раз!' }]);
+      setMessages(prev => [...prev, { role: 'bot', text: 'Ошибка сети. Бармен проверяет запасы Cherribos.' }]);
     } finally {
       setLoading(false);
     }
@@ -42,7 +42,7 @@ function App() {
         <div className="header-content">
           <img src="/logo.png" alt="Лого" className="logo" />
           <div className="header-text">
-            <h1 className="bar-title">Бар На-дне</h1>
+            <h1 className="bar-title">Шот-бар На дне</h1>
             <p className="bar-address">Зыбицкая, 6</p>
           </div>
         </div>
@@ -54,7 +54,7 @@ function App() {
             {msg.text}
           </div>
         ))}
-        {loading && <div className="message bot" style={{opacity: 0.5}}>Наливаем ответ...</div>}
+        {loading && <div className="message bot" style={{opacity: 0.5}}>...</div>}
         <div ref={chatEndRef} />
       </div>
 
