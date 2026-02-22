@@ -6,7 +6,7 @@ const RENDER_URL = 'https://booking-bar-na-dne.onrender.com';
 
 function App() {
   const [messages, setMessages] = useState([
-    { role: 'bot', text: 'Здорово! "На дне" на связи. 🥂 Keri и Shchavlik уже готовят инфузии. Как тебя зовут и когда ждать?' }
+    { role: 'bot', text: 'Здорово! "На дне" на связи. 🥂 Давай забронируем стол. Как тебя зовут и когда ждать?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -30,7 +30,7 @@ function App() {
       });
       setMessages(prev => [...prev, { role: 'bot', text: response.data.text }]);
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'bot', text: 'Ошибка сети. Бармен проверяет запасы Cherribos.' }]);
+      setMessages(prev => [...prev, { role: 'bot', text: 'Ошибка сети. Попробуй еще раз чуть позже.' }]);
     } finally {
       setLoading(false);
     }
@@ -40,7 +40,12 @@ function App() {
     <div className="app-container">
       <header className="header">
         <div className="header-content">
-          <img src="/logo.png" alt="Лого" className="logo" />
+          
+          {/* Обертка для круглого текстурированного фона */}
+          <div className="logo-wrapper">
+            <img src="/logo.png" alt="Лого" className="logo" />
+          </div>
+
           <div className="header-text">
             <h1 className="bar-title">Шот-бар На дне</h1>
             <p className="bar-address">Зыбицкая, 6</p>
