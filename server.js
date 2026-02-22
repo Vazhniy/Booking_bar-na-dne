@@ -1,82 +1,88 @@
-import express from 'express';
-import cors from 'cors';
-import axios from 'axios';
+const express = require('express');
+const cors = require('cors');
+const axios = require('axios');
+require('dotenv').config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Теперь мы берем ключи из "окружения" сервера
+// Забираем ключи из настроек Render (Environment Variables)
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const CHAT_ID = process.env.CHAT_ID;
 
-const systemPrompt = `Ты — бармен "На дне" (Зыбицкая, Минск). 
-Твоя цель: собрать бронь за минимальное число сообщений. 
-Будь краток (желательно всю информацию выяснить за один промт), ироничен. 
+// Системная инструкция: задает характер и логику "быстрой" брони
+const SYSTEM_PROMPT = `
+Ты — легендарный бармен минского руин-бара «На дне» на Зыбицкой. 
+Твой стиль: ироничный, дерзкий, краткий. Ты ценишь время и не любишь пустую болтовню.
 
-Сразу запрашивай: 
-1. Имя (как величать?)
-2. Время (когда ждать?)
-3. Сколько вас? (количество выживших)
-4. Повод (пьем с горя или от радости?)
-5. Телефон (чтобы найти, если потеряетесь)
+ТВОЯ ЗАДАЧА:
+Собрать данные для брони за МИНИМАЛЬНОЕ количество сообщений.
 
-Если чего-то не хватает — переспроси только это. Если всё есть — пиши "Бронь принята!" и присылай краткий итог.`;
+ТВОИ ПЕРСОНАЖИ (используй их в шутках):
+- Keri: делает суровые инфузии.
+- Shchavlik: кислый как жизнь.
+- Cherribos: вишневый мститель.
+- Группа Mintallica: главные по тяжелому року и мяте.
 
-// В функции обработки сообщения добавь:
-// { role: "system", content: systemPrompt }
+ПРАВИЛА ДИАЛОГА:
+1. В самом первом сообщении поприветствуй гостя и СРАЗУ попроси: Имя, Время, Кол-во людей, Повод и Телефон.
+2. Если гость прислал не всё — коротко переспроси только недостающее.
+3. Если всё прислано — напиши "Бронь принята!", пошути про настойки Keri или Shchavlik и заверши диалог.
+4. Не используй длинные предложения. Пиши в стиле Зыбицкой после полуночи.
+`;
+
+// Функция для отправки данных в Telegram группу
+async function sendToTelegram(bookingData) {
+    const text = `🔔 **НОВАЯ БРОНЬ "НА ДНЕ"**\n\n` +
+                 `👤 Гость: ${bookingData}\n` +
+                 `📍 Место: Зыбицкая, 6`;
+    
+    try {
+        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+            chat_id: CHAT_ID,
+            text: text,
+            parse_mode: 'Markdown'
+        });
+    } catch (error) {
+        console.error('Ошибка Telegram:', error.message);
+    }
+}
 
 app.post('/api/chat', async (req, res) => {
+    const { message, history } = req.body;
+
     try {
-        const { message, history } = req.body;
-        
-        const formattedHistory = [];
-        history.forEach((msg, index) => {
-            if (index === 0 && msg.role === 'assistant') return; 
-            formattedHistory.push({
-                role: msg.role === 'assistant' ? 'model' : 'user',
-                parts: [{ text: msg.content }]
-            });
-        });
-        
-        const secretMessage = `${systemPrompt}\n\nКЛИЕНТ ГОВОРИТ: ${message}`;
-        formattedHistory.push({ role: 'user', parts: [{ text: secretMessage }] });
+        const response = await axios.post(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+            {
+                contents: [
+                    { role: "user", parts: [{ text: SYSTEM_PROMPT }] },
+                    ...history.map(msg => ({
+                        role: msg.role === 'bot' ? 'model' : 'user',
+                        parts: [{ text: msg.text }]
+                    })),
+                    { role: "user", parts: [{ text: message }] }
+                ]
+            }
+        );
 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-        
-        const aiRequest = await axios.post(url, { contents: formattedHistory });
-        const aiResponse = aiRequest.data.candidates[0].content.parts[0].text;
+        const botResponse = response.data.candidates[0].content.parts[0].text;
 
-        if (aiResponse.includes('{"status": "ready"')) {
-            const jsonString = aiResponse.match(/\{[\s\S]*\}/)[0];
-            const bookingData = JSON.parse(jsonString);
-            
-            const tgMessage = `🔔 *БРОНЬ НА ЗЫБИЦКОЙ*\n👤 ${bookingData.name}\n📅 ${bookingData.date_time}\n👥 ${bookingData.guests} чел.\n📞 ${bookingData.phone}`;
-            
-            await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-                chat_id: CHAT_ID, text: tgMessage, parse_mode: 'Markdown'
-            });
-
-            res.json({ reply: "Твой стол забронирован! 🎉 Теперь крути колесо фортуны ниже, проверим твою удачу!", isFinal: true });
-        } else {
-            res.json({ reply: aiResponse, isFinal: false });
+        // Если в ответе бота есть фраза о принятии брони, дублируем в Telegram
+        if (botResponse.toLowerCase().includes("бронь принята") || botResponse.toLowerCase().includes("записал")) {
+            await sendToTelegram(`Данные из чата: ${message}`);
         }
+
+        res.json({ text: botResponse });
     } catch (error) {
-        // ПРОВЕРКА НА ЛИМИТ ЗАПРОСОВ (Ошибка 429)
-        if (error.response && error.response.status === 429) {
-            console.log("⚠️ Превышен лимит запросов Google API.");
-            return res.status(200).json({ 
-                reply: "Тут на Зыбицкой аншлаг! Бармен зашивается с заказами. Подожди буквально полминуты, пока я натру стаканы, и отвечу тебе! 🍻" 
-            });
-        }
-
-        console.error("ОШИБКА:", error.response?.data || error.message);
-        res.status(500).json({ reply: "Что-то Горький хмурится... Попробуй отправить сообщение еще раз!" });
+        console.error('Ошибка Gemini:', error.response?.data || error.message);
+        res.status(500).json({ text: 'Ошибка связи. Проверь, запущен ли сервер.' });
     }
 });
 
-
-app.listen(5000, () => console.log('✅ Сервер "На дне" готов к работе на порту 5000'));
-
-
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`✅ Сервер "На дне" запущен на порту ${PORT}`);
+});
