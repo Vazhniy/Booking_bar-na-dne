@@ -14,10 +14,8 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const CHAT_ID = process.env.CHAT_ID;
 
-// Инициализируем официальный SDK Google
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-// Настраиваем модель и её характер
 const model = genAI.getGenerativeModel({ 
     model: "gemini-1.5-flash",
     systemInstruction: `Ты — бармен шот-бара «На дне» на Зыбицкой. Твой стиль: вежливый, но краткий и по делу. Ты ценишь время. 
@@ -48,22 +46,25 @@ app.post('/api/chat', async (req, res) => {
     const { message, history } = req.body;
 
     try {
-        // Подготавливаем историю для SDK
-        const formattedHistory = history.map(msg => ({
+        // Форматируем историю
+        let formattedHistory = history.map(msg => ({
             role: msg.role === 'bot' ? 'model' : 'user',
             parts: [{ text: msg.text }]
         }));
 
-        // Запускаем чат
+        // === ИСПРАВЛЕНИЕ ОШИБКИ GEMINI ===
+        // Если история начинается с ответа бота (model), просто отрезаем его
+        if (formattedHistory.length > 0 && formattedHistory[0].role === 'model') {
+            formattedHistory.shift();
+        }
+
         const chat = model.startChat({
             history: formattedHistory
         });
 
-        // Отправляем сообщение
         const result = await chat.sendMessage(message);
         const botResponse = result.response.text();
 
-        // Проверяем, принята ли бронь
         if (botResponse.toLowerCase().includes("бронь принята") || botResponse.toLowerCase().includes("записал")) {
             await sendToTelegram(message);
         }
