@@ -1,42 +1,126 @@
-#root {
-  max-width: 1280px;
+:root {
+  --bg-color: #1a1a1a;
+  --accent-color: #ffcc00;
+  --text-color: #ffffff;
+  --bot-msg: #333333;
+  --user-msg: #ffcc00;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body, #root {
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: var(--bg-color);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 500px;
   margin: 0 auto;
-  padding: 2rem;
+  position: relative;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.header {
+  padding: 15px;
   text-align: center;
+  border-bottom: 1px solid #333;
+  background: rgba(26, 26, 26, 0.9);
+  backdrop-filter: blur(10px);
+  z-index: 10;
 }
 
 .logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  height: 50px;
+  filter: drop-shadow(0 0 5px var(--accent-color));
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.chat-window {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  -webkit-overflow-scrolling: touch;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.message {
+  max-width: 85%;
+  padding: 12px 16px;
+  border-radius: 20px;
+  font-size: 15px;
+  line-height: 1.4;
 }
 
-.card {
-  padding: 2em;
+.bot {
+  align-self: flex-start;
+  background: var(--bot-msg);
+  color: white;
+  border-bottom-left-radius: 4px;
 }
 
-.read-the-docs {
-  color: #888;
+.user {
+  align-self: flex-end;
+  background: var(--user-msg);
+  color: black;
+  border-bottom-right-radius: 4px;
+  font-weight: 500;
+}
+
+.input-area {
+  padding: 15px;
+  background: #222;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+input {
+  flex: 1;
+  background: #333;
+  border: none;
+  padding: 12px 15px;
+  border-radius: 25px;
+  color: white;
+  font-size: 16px; /* Защита от зума на iOS */
+}
+
+input:focus {
+  outline: 2px solid var(--accent-color);
+}
+
+.send-btn {
+  background: var(--accent-color);
+  border: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Стили для Колеса */
+.wheel-btn {
+  position: absolute;
+  top: 80px;
+  right: 15px;
+  background: #ff4444;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  z-index: 5;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
