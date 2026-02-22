@@ -2,21 +2,19 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './App.css';
 
-const RENDER_URL = 'https://booking-bar-na-dne.onrender.com'; // ТВОЯ ССЫЛКА
+const RENDER_URL = 'https://booking-bar-na-dne.onrender.com';
 
 function App() {
   const [messages, setMessages] = useState([
-    { role: 'bot', text: 'Здорово! "На дне" на связи. Пока Keri не выпила всё Hippocras, давай бронировать! Как тебя зовут и когда ждать?' }
+    { role: 'bot', text: 'Здорово! "На дне" на связи. 🥃 Пока Keri не выпила всё Hippocras, а Shchavlik не стал еще кислее — давай бронировать стол! Как тебя зовут и когда ждать?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef(null);
 
-  const scrollToBottom = () => {
+  useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(scrollToBottom, [messages, loading]); // Добавили loading в зависимости
+  }, [messages, loading]);
 
   const handleSend = async () => {
     if (!input.trim() || loading) return;
@@ -29,11 +27,11 @@ function App() {
     try {
       const response = await axios.post(`${RENDER_URL}/api/chat`, {
         message: input,
-        history: messages.map(m => ({role: m.role, text: m.text})) // Чистим историю перед отправкой
+        history: messages.map(m => ({role: m.role, text: m.text}))
       });
       setMessages(prev => [...prev, { role: 'bot', text: response.data.text }]);
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'bot', text: 'Ошибка связи. Попробуй через минуту, бармен отошел за Shchavlik.' }]);
+      setMessages(prev => [...prev, { role: 'bot', text: 'Ошибка сети. Бармен пошел менять кегу, попробуй еще раз.' }]);
     } finally {
       setLoading(false);
     }
@@ -41,13 +39,13 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* Кнопка с иконкой */}
-      <button className="wheel-btn" onClick={() => alert('Колесо скоро будет готово!')}>
-        <span className="wheel-icon">🎡</span> Скидка
+      <button className="wheel-trigger" onClick={() => alert('🎡 Колесо удачи скоро будет запущено!')}>
+        WHEEL OF FORTUNE
       </button>
-      
+
       <header className="header">
         <img src="/logo.png" alt="На дне" className="logo" />
+        <div className="status">Zybitskaya Underground</div>
       </header>
 
       <div className="chat-window">
@@ -56,31 +54,26 @@ function App() {
             {msg.text}
           </div>
         ))}
-        
-        {/* Новый анимированный индикатор печати */}
         {loading && (
-          <div className="message bot typing-indicator">
+          <div className="typing">
             <div className="dot"></div>
             <div className="dot"></div>
             <div className="dot"></div>
           </div>
         )}
-        
         <div ref={chatEndRef} />
       </div>
 
       <div className="input-area">
         <input 
-          type="text" 
+          placeholder="Напиши бармену..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-          placeholder="Напиши бармену..."
+          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
         />
-        <button className="send-btn" onClick={handleSend} disabled={loading}>
-          {/* SVG иконка стрелки */}
-          <svg className="send-icon" viewBox="0 0 24 24">
-            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+        <button className="send-btn" onClick={handleSend}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
           </svg>
         </button>
       </div>
