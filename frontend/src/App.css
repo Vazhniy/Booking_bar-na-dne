@@ -1,12 +1,8 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background-color: #121212;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #0d0a14; /* Темно-фиолетовый фон страницы */
   color: #ffffff;
 }
 
@@ -16,131 +12,79 @@ body {
   height: 100vh;
   max-width: 600px;
   margin: 0 auto;
-  background-color: #1a1a1a;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  background-color: #141026; /* Основной фон приложения */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
 }
 
 .header {
-  background-color: #000000;
+  background-color: #0b0914;
   padding: 15px 20px;
-  border-bottom: 2px solid #ff4500;
+  border-bottom: 1px solid #2a2146;
 }
 
-.header-content {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
+.header-content { display: flex; align-items: center; gap: 15px; }
 
 .logo {
-  width: 50px;
-  height: 50px;
+  width: 50px; height: 50px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #ff4500;
 }
 
-.bar-title {
-  font-size: 1.5rem;
-  color: #ff4500;
-  margin-bottom: 3px;
-}
-
-.bar-address {
-  font-size: 0.9rem;
-  color: #aaaaaa;
-}
+.bar-title { font-size: 1.5rem; color: #ffffff; margin-bottom: 3px; }
+.bar-address { font-size: 0.9rem; color: #8a7fa3; }
 
 .chat-window {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+  flex: 1; overflow-y: auto; padding: 20px;
+  display: flex; flex-direction: column; gap: 15px;
 }
 
 .message {
-  max-width: 80%;
-  padding: 12px 16px;
-  border-radius: 15px;
-  line-height: 1.4;
-  word-wrap: break-word;
-  font-size: 1rem;
-}
-
-.message.user {
-  align-self: flex-end;
-  background-color: #ff4500;
-  color: white;
-  border-bottom-right-radius: 2px;
+  max-width: 80%; padding: 12px 16px;
+  border-radius: 18px; line-height: 1.4;
+  word-wrap: break-word; font-size: 1rem;
 }
 
 .message.bot {
   align-self: flex-start;
-  background-color: #2d2d2d;
-  color: white;
-  border-bottom-left-radius: 2px;
+  background-color: #2a2146; /* Цвет сообщения бота (светло-фиолетовый) */
+  color: #e5dfff;
+  border-bottom-left-radius: 4px;
   white-space: pre-wrap;
+  border: 1px solid #362a59;
+}
+
+.message.user {
+  align-self: flex-end;
+  background-color: #6347c0; /* Ярко-фиолетовый для пользователя */
+  color: white;
+  border-bottom-right-radius: 4px;
 }
 
 .input-area {
-  display: flex;
-  padding: 15px;
-  background-color: #000000;
-  border-top: 1px solid #333;
-  gap: 10px;
-  align-items: center;
+  display: flex; padding: 15px;
+  background-color: #0b0914;
+  border-top: 1px solid #2a2146;
+  gap: 10px; align-items: center;
 }
 
-.input-wrapper {
-  flex: 1;
-}
+.input-wrapper { flex: 1; }
 
 .input-wrapper input {
-  width: 100%;
-  padding: 14px 20px;
-  border-radius: 25px;
-  border: none;
-  background-color: #2d2d2d;
-  color: white;
-  font-size: 1rem;
-  outline: none;
-  transition: box-shadow 0.2s;
+  width: 100%; padding: 14px 20px;
+  border-radius: 25px; border: 1px solid #2a2146;
+  background-color: #1c1633; color: white;
+  font-size: 1rem; outline: none; transition: 0.2s;
 }
 
-.input-wrapper input:focus {
-  box-shadow: 0 0 0 2px #ff4500;
-}
-
-.input-wrapper input::placeholder {
-  color: #888;
-}
+.input-wrapper input:focus { border-color: #6347c0; }
+.input-wrapper input::placeholder { color: #8a7fa3; }
 
 .send-btn {
-  background-color: #ff4500;
-  border: none;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.2s, background-color 0.2s;
+  background-color: #6347c0; border: none;
+  border-radius: 50%; width: 50px; height: 50px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: 0.2s;
 }
 
-.send-btn:active {
-  transform: scale(0.9);
-}
-
-.send-btn:disabled {
-  background-color: #555;
-  cursor: not-allowed;
-}
-
-.send-btn svg {
-  width: 24px;
-  height: 24px;
-  fill: white;
-}
+.send-btn:active { transform: scale(0.9); }
+.send-btn svg { width: 24px; height: 24px; fill: white; }
