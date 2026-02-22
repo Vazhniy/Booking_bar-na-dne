@@ -18,7 +18,6 @@ function App() {
 
   const handleSend = async () => {
     if (!input.trim() || loading) return;
-
     const userMsg = { role: 'user', text: input };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
@@ -31,7 +30,7 @@ function App() {
       });
       setMessages(prev => [...prev, { role: 'bot', text: response.data.text }]);
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'bot', text: 'Ошибка сети. Бармен уронил бокал, попробуй еще раз.' }]);
+      setMessages(prev => [...prev, { role: 'bot', text: 'Ошибка сети. Попробуй еще раз.' }]);
     } finally {
       setLoading(false);
     }
@@ -39,16 +38,8 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* Кнопка колеса теперь просто иконка */}
-      <button className="wheel-trigger" onClick={() => alert('🎡 Скоро здесь будет розыгрыш!')}>
-        🎡
-      </button>
-
       <header className="header">
-        <div className="logo-wrapper">
-          <img src="/logo.png" alt="На дне" className="logo" />
-          <div className="status-line">Minsk • Zybitskaya</div>
-        </div>
+        <h1>НА ДНЕ</h1>
       </header>
 
       <div className="chat-window">
@@ -57,7 +48,7 @@ function App() {
             {msg.text}
           </div>
         ))}
-        {loading && <div className="message bot">Печатает...</div>}
+        {loading && <div className="message bot">...</div>}
         <div ref={chatEndRef} />
       </div>
 
@@ -69,7 +60,6 @@ function App() {
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
         />
         <button className="send-btn" onClick={handleSend} disabled={loading}>
-          {/* Новая минималистичная иконка стрелки */}
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M5 12H19M19 12L13 6M19 12L13 18" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
