@@ -1,11 +1,8 @@
 :root {
-  /* Мягкая фиолетовая палитра */
-  --bg-color: #0f0c1d; /* Глубокий темный фиолетовый */
+  --bg-color: #0f0c1d; 
   --glass-white: rgba(255, 255, 255, 0.08);
-  --glass-purple: rgba(180, 150, 255, 0.15);
-  --accent-soft-purple: #d1b3ff; /* Светло-фиолетовый акцент */
+  --accent-soft-purple: #d1b3ff; 
   --text-main: #f0eaff;
-  
   --bot-bubble: rgba(255, 255, 255, 0.05);
   --user-bubble: rgba(209, 179, 255, 0.3);
 }
@@ -22,7 +19,7 @@ html, body, #root {
   overflow: hidden;
   background: var(--bg-color);
   background-image: radial-gradient(circle at 50% 0%, #2a1b4d 0%, #0f0c1d 70%);
-  font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, system-ui, sans-serif;
   color: var(--text-main);
 }
 
@@ -37,7 +34,7 @@ html, body, #root {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* --- Шапка: Смещение влево и матовое стекло --- */
+/* --- Шапка: Смещена влево, текст без капса --- */
 .header {
   padding: 18px 20px;
   background: var(--glass-white);
@@ -50,15 +47,14 @@ html, body, #root {
 .header-content {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* Смещено влево */
+  justify-content: flex-start; /* Смещение влево */
   gap: 15px;
 }
 
 .logo {
   height: 52px;
   width: auto;
-  /* Убирает белый фон у темного логотипа на темном фоне */
-  mix-blend-mode: multiply; 
+  mix-blend-mode: multiply; /* Убирает белый фон кляксы */
   filter: brightness(1.2);
 }
 
@@ -69,21 +65,20 @@ html, body, #root {
 
 .bar-title {
   margin: 0;
-  font-size: 20px;
+  font-size: 21px;
   font-weight: 500; /* Не жирный */
   color: var(--accent-soft-purple);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  text-transform: none; /* Убран капс */
+  letter-spacing: 0.5px;
 }
 
 .bar-address {
   margin: 0;
   font-size: 13px;
   color: rgba(255, 255, 255, 0.5);
-  font-weight: 400;
 }
 
-/* --- Окно чата --- */
+/* --- Чат --- */
 .chat-window {
   flex: 1;
   overflow-y: auto;
@@ -100,7 +95,6 @@ html, body, #root {
   font-size: 16px;
   line-height: 1.5;
   backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .bot {
@@ -108,6 +102,7 @@ html, body, #root {
   background: var(--bot-bubble);
   color: #e0d5ff;
   border-bottom-left-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .user {
@@ -118,12 +113,11 @@ html, body, #root {
   border: 1px solid rgba(209, 179, 255, 0.2);
 }
 
-/* --- Панель ввода: Стеклянный стиль --- */
+/* --- Ввод --- */
 .input-area {
   padding: 15px;
   background: var(--glass-white);
   backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   display: flex;
   gap: 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -146,10 +140,6 @@ input {
   outline: none;
 }
 
-input::placeholder {
-  color: rgba(255, 255, 255, 0.3);
-}
-
 .send-btn {
   background: var(--accent-soft-purple);
   border: none;
@@ -160,11 +150,6 @@ input::placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s, opacity 0.2s;
-}
-
-.send-btn:active {
-  transform: scale(0.9);
 }
 
 .send-btn svg {
