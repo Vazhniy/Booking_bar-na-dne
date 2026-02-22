@@ -1,9 +1,9 @@
 :root {
-  --bg-dark: #0a0a0a;
-  --accent-yellow: #ffea00; /* Неоновый желтый */
-  --accent-glow: 0 0 15px rgba(255, 234, 0, 0.4);
-  --glass-bg: rgba(20, 20, 20, 0.9);
+  --bg-color: #121212;
+  --accent-color: #FFC107; /* Спокойный янтарно-желтый */
   --text-white: #ffffff;
+  --bot-bubble: #2c2c2e;
+  --user-bubble: #FFC107;
 }
 
 * {
@@ -16,8 +16,8 @@ html, body, #root {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background: var(--bg-dark);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-color);
+  font-family: -apple-system, system-ui, sans-serif;
 }
 
 .app-container {
@@ -27,18 +27,16 @@ html, body, #root {
   max-width: 500px;
   margin: 0 auto;
   position: relative;
-  /* Учет челки iPhone */
+  background: var(--bg-color);
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* --- Header с лого и адресом --- */
+/* --- Шапка без лишнего блеска --- */
 .header {
-  padding: 15px 20px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border-bottom: 1px solid rgba(255, 234, 0, 0.3);
+  padding: 15px;
+  background: #1a1a1a;
+  border-bottom: 2px solid var(--accent-color);
   z-index: 10;
 }
 
@@ -46,14 +44,12 @@ html, body, #root {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 15px;
+  gap: 12px;
 }
 
 .logo {
-  height: 55px;
+  height: 48px;
   width: auto;
-  /* Убираем визуальный шум логотипа */
-  filter: drop-shadow(0 0 8px rgba(255, 234, 0, 0.5));
 }
 
 .header-text {
@@ -63,87 +59,100 @@ html, body, #root {
 
 .bar-title {
   margin: 0;
-  font-size: 22px;
-  font-weight: 900;
-  color: var(--accent-yellow);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent-color);
   text-transform: uppercase;
-  letter-spacing: 1px;
-  text-shadow: 0 0 10px rgba(255, 234, 0, 0.5);
 }
 
 .bar-address {
   margin: 0;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 500;
+  font-size: 12px;
+  color: #8e8e93;
 }
 
-/* --- Чат --- */
+/* --- Окно чата --- */
 .chat-window {
   flex: 1;
   overflow-y: auto;
   padding: 20px 15px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 12px;
+  background: var(--bg-color);
 }
 
 .message {
-  max-width: 85%;
-  padding: 12px 18px;
-  border-radius: 20px;
+  max-width: 80%;
+  padding: 10px 16px;
+  border-radius: 18px;
   font-size: 16px;
   line-height: 1.4;
 }
 
 .bot {
   align-self: flex-start;
-  background: #222;
+  background: var(--bot-bubble);
   color: white;
   border-bottom-left-radius: 4px;
 }
 
 .user {
   align-self: flex-end;
-  background: var(--accent-yellow);
-  color: black;
-  font-weight: 600;
+  background: var(--user-bubble);
+  color: #000;
+  font-weight: 500;
   border-bottom-right-radius: 4px;
-  box-shadow: var(--accent-glow);
 }
 
-/* --- Ввод --- */
+/* --- Панель ввода --- */
 .input-area {
-  padding: 15px;
-  background: var(--glass-bg);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 12px 15px;
+  background: #1a1a1a;
   display: flex;
   gap: 10px;
+  border-top: 1px solid #2c2c2e;
 }
 
 input {
   flex: 1;
-  background: #1a1a1a;
-  border: 1px solid #333;
-  padding: 12px 20px;
-  border-radius: 25px;
+  background: #2c2c2e;
+  border: 1px solid #3a3a3c;
+  padding: 10px 15px;
+  border-radius: 20px;
   color: white;
   font-size: 16px;
-}
-
-input:focus {
   outline: none;
-  border-color: var(--accent-yellow);
 }
 
 .send-btn {
-  background: var(--accent-yellow);
+  background: var(--accent-color);
   border: none;
-  width: 45px;
-  height: 45px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.send-btn svg {
+  fill: #000;
+  width: 18px;
+  height: 18px;
+}
+
+.wheel-btn {
+    position: absolute;
+    top: 85px;
+    right: 15px;
+    background: #e63946;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
