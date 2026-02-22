@@ -1,3 +1,4 @@
+/* frontend/src/App.css */
 :root {
   --bg-color: #121212;
   --accent-color: #FFC107; /* Спокойный янтарно-желтый */
@@ -32,7 +33,7 @@ html, body, #root {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* --- Шапка без лишнего блеска --- */
+/* --- Шапка --- */
 .header {
   padding: 15px;
   background: #1a1a1a;
@@ -43,13 +44,14 @@ html, body, #root {
 .header-content {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* Смещение влево */
   gap: 12px;
 }
 
 .logo {
   height: 48px;
   width: auto;
+  mix-blend-mode: multiply; /* Убирает белый фон */
 }
 
 .header-text {
@@ -60,7 +62,7 @@ html, body, #root {
 .bar-title {
   margin: 0;
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 500; /* Не жирный шрифт */
   color: var(--accent-color);
   text-transform: uppercase;
 }
@@ -141,18 +143,4 @@ input {
   fill: #000;
   width: 18px;
   height: 18px;
-}
-
-.wheel-btn {
-    position: absolute;
-    top: 85px;
-    right: 15px;
-    background: #e63946;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: bold;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
