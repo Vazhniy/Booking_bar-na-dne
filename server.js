@@ -1,7 +1,9 @@
-const express = require('express');
-const cors = require('cors');
-const axios = require('axios');
-require('dotenv').config();
+import express from 'express';
+import cors from 'cors';
+import axios from 'axios';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 app.use(cors());
@@ -12,7 +14,7 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const CHAT_ID = process.env.CHAT_ID;
 
-// Системная инструкция: задает характер и логику "быстрой" брони
+// Системная инструкция
 const SYSTEM_PROMPT = `
 Ты — легендарный бармен минского руин-бара «На дне» на Зыбицкой. 
 Твой стиль: ироничный, дерзкий, краткий. Ты ценишь время и не любишь пустую болтовню.
@@ -20,16 +22,10 @@ const SYSTEM_PROMPT = `
 ТВОЯ ЗАДАЧА:
 Собрать данные для брони за МИНИМАЛЬНОЕ количество сообщений.
 
-ТВОИ ПЕРСОНАЖИ (используй их в шутках):
-- Keri: делает суровые инфузии.
-- Shchavlik: кислый как жизнь.
-- Cherribos: вишневый мститель.
-- Группа Mintallica: главные по тяжелому року и мяте.
-
 ПРАВИЛА ДИАЛОГА:
 1. В самом первом сообщении поприветствуй гостя и СРАЗУ попроси: Имя, Время, Кол-во людей, Повод и Телефон.
 2. Если гость прислал не всё — коротко переспроси только недостающее.
-3. Если всё прислано — напиши "Бронь принята!", пошути про настойки Keri или Shchavlik и заверши диалог.
+3. Если всё прислано — напиши "Бронь принята!" и заверши диалог.
 4. Не используй длинные предложения. Пиши в стиле Зыбицкой после полуночи.
 `;
 
@@ -70,7 +66,7 @@ app.post('/api/chat', async (req, res) => {
 
         const botResponse = response.data.candidates[0].content.parts[0].text;
 
-        // Если в ответе бота есть фраза о принятии брони, дублируем в Telegram
+        // Если в ответе бота есть подтверждение брони, дублируем в Telegram
         if (botResponse.toLowerCase().includes("бронь принята") || botResponse.toLowerCase().includes("записал")) {
             await sendToTelegram(`Данные из чата: ${message}`);
         }
