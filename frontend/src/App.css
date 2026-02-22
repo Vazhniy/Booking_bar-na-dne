@@ -34,7 +34,7 @@ html, body, #root {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* --- Шапка: Смещена влево, текст без капса --- */
+/* --- Шапка --- */
 .header {
   padding: 18px 20px;
   background: var(--glass-white);
@@ -47,14 +47,14 @@ html, body, #root {
 .header-content {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* Смещение влево */
+  justify-content: flex-start;
   gap: 15px;
 }
 
 .logo {
   height: 52px;
   width: auto;
-  mix-blend-mode: multiply; /* Убирает белый фон кляксы */
+  mix-blend-mode: multiply; 
   filter: brightness(1.2);
 }
 
@@ -65,10 +65,10 @@ html, body, #root {
 
 .bar-title {
   margin: 0;
-  font-size: 21px;
-  font-weight: 500; /* Не жирный */
+  font-size: 18px; /* Сделали шрифт еще меньше */
+  font-weight: 500; 
   color: var(--accent-soft-purple);
-  text-transform: none; /* Убран капс */
+  text-transform: none; 
   letter-spacing: 0.5px;
 }
 
