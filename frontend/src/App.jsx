@@ -1,115 +1,92 @@
-import express from 'express';
-import cors from 'cors';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import dotenv from 'dotenv';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import './App.css';
 
-dotenv.config();
+const RENDER_URL = 'https://booking-bar-na-dne.onrender.com';
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+function App() {
+  const [messages, setMessages] = useState([
+    { role: 'bot', text: 'Привет! Я Толик — бессменный бармен руин-бара «На дне». 🥃 Могу организовать вам столик, пока еще остались места, или рассказать, какие диджеи и акции у нас планируются. Чего изволите: бронируем или просвещаемся?' }
+  ]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const chatEndRef = useRef(null);
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
-const CHAT_ID = process.env.CHAT_ID;
-const SHEET_URL = process.env.SHEET_URL;
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+  const handleSend = async () => {
+    if (!input.trim() || loading) return;
+    const userMsg = { role: 'user', text: input };
+    setMessages(prev => [...prev, userMsg]);
+    setInput('');
+    setLoading(true);
 
-const BASE_PROMPT = `
-Ты — Толик, саркастичный, ироничный, но обаятельный и профессиональный бармен руин-бара «На дне» на Зыбицкой. 
-Твой стиль: тонкий юмор, сарказм, вежливость с остринкой. 
-КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО: использовать пацанский, блатной или уличный сленг (никаких "бро", "братишка", "кореш", "епт" и т.д.). Ты интеллигентный циник, а не гопник. Но колкие шутки и сарказм приветствуются!!
-С пользователем уже поздоровались в интерфейсе, поэтому переходи сразу к делу, не нужно писать "привет" или "здравствуйте".
-
-ТВОЯ ЗАДАЧА И СЦЕНАРИИ:
-В начале диалога гость выбирает: бронь стола или информация по акциям/тусовкам. В зависимости от ответа гостя, действуй по одному из сценариев.
-
-СЦЕНАРИЙ 1: ЕСЛИ ГОСТЬ ХОЧЕТ УЗНАТЬ ИНФОРМАЦИЮ (Акции, музыка, меню):
-- Отвечай на вопросы про тусовки, диджеев, мероприятия и акции, опираясь ТОЛЬКО на предоставленное тебе ниже расписание.
-- 🎧 ПРАВИЛО ПРО ДИДЖЕЕВ: В таблице первый диджей играет с 22:00 до 01:00, а второй — с 01:00 до 05:00. Всегда расписывай эти часы сам.
-- Отвечай емко и с иронией. После ответа невзначай предложи все-таки забронировать столик.
-
-СЦЕНАРИЙ 2: ЕСЛИ ГОСТЬ ХОЧЕТ БРОНИРОВАТЬ СТОЛ:
-- Собери 5 данных: 1. Имя 2. Время 3. Кол-во гостей 4. Повод 5. Телефон
-- Если прислали не всё — переспроси недостающее с фирменным сарказмом (например: "Стол я вам, конечно, найду, а звонить куда буду? Голубиной почтой свяжемся? Жду номер телефона.").
-- Как только соберешь ВСЕ 5 пунктов, сделай следующее:
-  1. Расскажи гостям, как им крупно повезло, и что в качестве комплимента ты даришь им по бесплатному напитку на каждого гостя в стол.
-  2. Пошути на тему того, какими "бомбами" (это наши фирменные патидринки) они будут ушатываться всю ночь.
-  3. САМ ВЫБЕРИ ОДИН рандомный шот для угощения из этого списка: Щавлик, Кэри, Цитрон, Мандарини, крестный молочник, Черрибос, Рафалия. Озвучь его гостю.
-  4. ОБЯЗАТЕЛЬНО напиши фразу: "Бронь принята!". Без этой фразы магия не сработает.
-  5. В САМОМ КОНЦЕ своего ответа (с новой строки) ОБЯЗАТЕЛЬНО добавь скрытый блок для администратора. Начни его со слова ТЕЛЕГРАМ: и перечисли все собранные данные.
-
-ШАБЛОН СКРЫТОГО БЛОКА В КОНЦЕ СООБЩЕНИЯ (строго соблюдай формат):
-ТЕЛЕГРАМ:
-Имя: [Имя]
-Время: [Время]
-Кол-во: [Кол-во]
-Повод: [Повод]
-Телефон: [Телефон]
-Шот в подарок: [Название выбранного тобой шота]
-`;
-
-async function sendToTelegram(bookingData) {
-    const text = `🔔 **НОВАЯ БРОНЬ**\n\n👤 Данные:\n${bookingData}\n\n📍 Место: Шот-бар На Дне`;
     try {
-        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-            chat_id: CHAT_ID, text: text, parse_mode: 'Markdown'
-        });
-        console.log('✅ Бронь успешно улетела в Telegram');
+      const response = await axios.post(`${RENDER_URL}/api/chat`, {
+        message: input,
+        history: messages.map(m => ({role: m.role, text: m.text}))
+      });
+      setMessages(prev => [...prev, { role: 'bot', text: response.data.text }]);
     } catch (error) {
-        console.error('❌ Ошибка Telegram:', error.response?.data || error.message);
+      setMessages(prev => [...prev, { role: 'bot', text: 'Упс, бармен отвлекся на наливку. Попробуй еще раз чуть позже.' }]);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  return (
+    <div className="app-container">
+      <header className="header">
+        <div className="header-content">
+          <div className="logo-wrapper">
+            <img src="/logo.png" alt="Лого" className="logo" />
+          </div>
+          <div className="header-text">
+            <h1 className="bar-title">Шот-бар На дне</h1>
+            <p className="bar-address">Зыбицкая, 6</p>
+          </div>
+        </div>
+      </header>
+
+      <div className="chat-window">
+        {messages.map((msg, i) => (
+          <div key={i} className={`message-row ${msg.role}`}>
+            {/* Аватарка показывается только для бота */}
+            {msg.role === 'bot' && (
+              <img src="/logo.png" alt="Толик" className="bot-avatar" />
+            )}
+            <div className={`message ${msg.role}`}>
+              {msg.text}
+            </div>
+          </div>
+        ))}
+        {loading && (
+          <div className="message-row bot">
+            <img src="/logo.png" alt="Толик" className="bot-avatar" />
+            <div className="message bot" style={{opacity: 0.5}}>...</div>
+          </div>
+        )}
+        <div ref={chatEndRef} />
+      </div>
+
+      <div className="input-area">
+        <div className="input-wrapper">
+          <input 
+            type="text" 
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+            placeholder="Напиши Толику..."
+          />
+        </div>
+        <button className="send-btn" onClick={handleSend} disabled={loading}>
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
+  );
 }
 
-app.get('/ping', (req, res) => res.status(200).send('Толик на смене!'));
-
-app.post('/api/chat', async (req, res) => {
-    const { message, history } = req.body;
-    try {
-        let currentEvents = "Новостей пока нет, но алкоголь на месте.";
-        if (SHEET_URL) {
-            try { currentEvents = (await axios.get(SHEET_URL)).data; } catch (e) {}
-        }
-
-        const fullSystemPrompt = BASE_PROMPT + `\n\n=== АКТУАЛЬНОЕ РАСПИСАНИЕ ===\n${currentEvents}`;
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", systemInstruction: fullSystemPrompt });
-
-        let formattedHistory = history.map(msg => ({
-            role: msg.role === 'bot' ? 'model' : 'user',
-            parts: [{ text: msg.text }]
-        }));
-
-        if (formattedHistory.length > 0 && formattedHistory[0].role === 'model') formattedHistory.shift();
-
-        // Ограничитель памяти: помним только последние 6 сообщений
-        if (formattedHistory.length > 6) {
-            formattedHistory = formattedHistory.slice(-6);
-        }
-
-        const chat = model.startChat({ history: formattedHistory });
-        const result = await chat.sendMessage(message);
-        let botResponse = result.response.text();
-
-        // МАГИЯ ДЛЯ TELEGRAM: Ищем скрытый блок от Толика
-        if (botResponse.includes("ТЕЛЕГРАМ:")) {
-            const parts = botResponse.split("ТЕЛЕГРАМ:");
-            botResponse = parts[0].trim(); // Оставляем гостю только шутки и подтверждение брони
-            const telegramData = parts[1].trim(); // Забираем анкету с шотом для сервера
-            
-            await sendToTelegram(telegramData);
-        } else if (botResponse.toLowerCase().includes("бронь принята")) {
-            // Резервный вариант, если Толик забыл написать слово ТЕЛЕГРАМ:
-            await sendToTelegram(`Бронь: ${message}\n(AI не прислал детализированную анкету)`);
-        }
-
-        res.json({ text: botResponse });
-    } catch (error) {
-        console.error('Ошибка Gemini:', error);
-        res.status(500).json({ text: 'Упс, я немного отвлекся на наливку. Повтори-ка, что ты сказал?' });
-    }
-});
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ Сервер запущен на порту ${PORT}`));
+export default App;
