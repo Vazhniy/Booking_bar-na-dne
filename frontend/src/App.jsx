@@ -6,7 +6,7 @@ const RENDER_URL = 'https://booking-bar-na-dne.onrender.com';
 
 function App() {
   const [messages, setMessages] = useState([
-    { role: 'bot', text: 'Здорово! "На дне" на связи. 🥃 Пока Keri не выпила всё Hippocras, а Shchavlik не стал еще кислее — давай бронировать стол! Как тебя зовут и когда ждать?' }
+    { role: 'bot', text: 'Здорово! 🥃 Жду тебя "На дне". Пока Keri не разлила все инфузии, а Shchavlik не ушел в депрессию — давай бронировать стол! Как тебя величать и когда ждать?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -31,7 +31,7 @@ function App() {
       });
       setMessages(prev => [...prev, { role: 'bot', text: response.data.text }]);
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'bot', text: 'Ошибка сети. Бармен пошел менять кегу, попробуй еще раз.' }]);
+      setMessages(prev => [...prev, { role: 'bot', text: 'Ошибка сети. Бармен уронил бокал, попробуй еще раз.' }]);
     } finally {
       setLoading(false);
     }
@@ -39,13 +39,16 @@ function App() {
 
   return (
     <div className="app-container">
-      <button className="wheel-trigger" onClick={() => alert('🎡 Колесо удачи скоро будет запущено!')}>
-        WHEEL OF FORTUNE
+      {/* Кнопка колеса теперь просто иконка */}
+      <button className="wheel-trigger" onClick={() => alert('🎡 Скоро здесь будет розыгрыш!')}>
+        🎡
       </button>
 
       <header className="header">
-        <img src="/logo.png" alt="На дне" className="logo" />
-        <div className="status">Zybitskaya Underground</div>
+        <div className="logo-wrapper">
+          <img src="/logo.png" alt="На дне" className="logo" />
+          <div className="status-line">Minsk • Zybitskaya</div>
+        </div>
       </header>
 
       <div className="chat-window">
@@ -54,26 +57,21 @@ function App() {
             {msg.text}
           </div>
         ))}
-        {loading && (
-          <div className="typing">
-            <div className="dot"></div>
-            <div className="dot"></div>
-            <div className="dot"></div>
-          </div>
-        )}
+        {loading && <div className="message bot">Печатает...</div>}
         <div ref={chatEndRef} />
       </div>
 
       <div className="input-area">
         <input 
-          placeholder="Напиши бармену..."
+          placeholder="Твой ответ..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
         />
-        <button className="send-btn" onClick={handleSend}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
+        <button className="send-btn" onClick={handleSend} disabled={loading}>
+          {/* Новая минималистичная иконка стрелки */}
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 12H19M19 12L13 6M19 12L13 18" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </button>
       </div>
