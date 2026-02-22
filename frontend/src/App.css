@@ -1,230 +1,176 @@
 :root {
-  --bg-dark: #0a0a0a;
-  --bg-gradient: radial-gradient(circle at top right, #2a2a2a, #0a0a0a 80%);
-  --glass-bg: rgba(20, 20, 20, 0.7);
-  --accent-neon: #ffea00; /* Яркий неон */
-  --accent-glow: 0 0 15px rgba(255, 234, 0, 0.4);
-  --text-primary: #ffffff;
-  --text-secondary: #aaaaaa;
-  
-  --bot-msg-bg: linear-gradient(135deg, #2a2a3a, #1a1a2a);
-  --user-msg-bg: linear-gradient(135deg, var(--accent-neon), #ffc400);
+  --bg-main: #050505;
+  --accent-yellow: #ffdf00;
+  --accent-red: #ff3c00;
+  --glass: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.1);
 }
 
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-html, body, #root {
-  height: 100dvh; /* Фиксация высоты */
-  margin: 0;
-  padding: 0;
+body {
+  background-color: var(--bg-main);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
   overflow: hidden;
-  background: var(--bg-dark);
-  background-image: var(--bg-gradient);
-  color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
+/* Фоновая анимация свечения */
 .app-container {
+  height: 100dvh;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  max-width: 500px;
+  max-width: 480px;
   margin: 0 auto;
+  background: radial-gradient(circle at 50% -20%, #222, #050505 70%);
   position: relative;
-  box-shadow: 0 0 50px rgba(0,0,0,0.5);
-  /* Учет безопасных зон на iPhone с челкой */
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* --- Header с эффектом стекла --- */
+/* Header */
 .header {
-  padding: 12px 15px;
-  text-align: center;
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px); /* Размытие фона */
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  z-index: 10;
+  padding: 20px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  border-bottom: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
 }
 
 .logo {
-  height: 45px;
-  /* Неоновое свечение логотипа */
-  filter: drop-shadow(0 0 8px rgba(255, 234, 0, 0.6));
-  transition: transform 0.3s ease;
+  height: 55px;
+  filter: drop-shadow(0 0 10px rgba(255, 223, 0, 0.5));
+  margin-bottom: 5px;
 }
 
-.logo:hover {
-    transform: scale(1.05);
+.status {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--accent-yellow);
+  opacity: 0.8;
 }
 
-/* --- Окно чата --- */
+/* Chat area */
 .chat-window {
   flex: 1;
   overflow-y: auto;
-  padding: 20px 15px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  -webkit-overflow-scrolling: touch;
+  gap: 16px;
+  scrollbar-width: none;
 }
+.chat-window::-webkit-scrollbar { display: none; }
 
-/* Анимация появления сообщений */
-@keyframes slideIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
+/* Сообщения */
 .message {
   max-width: 85%;
   padding: 14px 18px;
-  border-radius: 22px;
   font-size: 15px;
-  line-height: 1.5;
-  position: relative;
-  animation: slideIn 0.3s ease-out forwards;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  line-height: 1.4;
+  border-radius: 18px;
+  animation: messageAppear 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
+
+@keyframes messageAppear {
+  from { opacity: 0; transform: translateY(15px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .bot {
   align-self: flex-start;
-  background: var(--bot-msg-bg);
-  color: var(--text-primary);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
   border-bottom-left-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .user {
   align-self: flex-end;
-  background: var(--user-msg-bg);
-  color: black;
+  background: linear-gradient(135deg, var(--accent-yellow), #e6c200);
+  color: #000;
   font-weight: 600;
   border-bottom-right-radius: 4px;
-  box-shadow: var(--accent-glow);
+  box-shadow: 0 4px 15px rgba(255, 223, 0, 0.2);
 }
 
-/* --- Индикатор печати (анимированные точки) --- */
-.typing-indicator {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 15px 20px;
-    height: 54px; /* Высота обычной строки */
+/* Индикатор печати */
+.typing {
+  display: flex;
+  gap: 4px;
+  padding: 10px;
 }
-
 .dot {
-    width: 8px;
-    height: 8px;
-    background: var(--text-secondary);
-    border-radius: 50%;
-    animation: bounce 1.4s infinite ease-in-out both;
+  width: 6px; height: 6px;
+  background: var(--accent-yellow);
+  border-radius: 50%;
+  animation: dotPulse 1.5s infinite ease-in-out;
+}
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotPulse {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(1.3); opacity: 1; }
 }
 
-.dot:nth-child(1) { animation-delay: -0.32s; }
-.dot:nth-child(2) { animation-delay: -0.16s; }
-
-@keyframes bounce {
-  0%, 80%, 100% { transform: scale(0); }
-  40% { transform: scale(1.0); }
-}
-
-/* --- Поле ввода (Glassmorphism) --- */
+/* Ввод */
 .input-area {
-  padding: 15px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  background: rgba(10, 10, 10, 0.8);
+  backdrop-filter: blur(20px);
   display: flex;
   gap: 12px;
-  align-items: center;
 }
 
 input {
   flex: 1;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #151515;
+  border: 1px solid var(--glass-border);
   padding: 14px 20px;
   border-radius: 30px;
-  color: white;
-  font-size: 16px; /* Защита от зума на iOS */
-  transition: all 0.3s ease;
-}
-
-input::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+  font-size: 16px;
+  transition: 0.3s;
 }
 
 input:focus {
   outline: none;
-  border-color: var(--accent-neon);
-  box-shadow: var(--accent-glow);
-  background: rgba(0, 0, 0, 0.5);
+  border-color: var(--accent-yellow);
+  background: #1a1a1a;
 }
 
 .send-btn {
-  background: var(--accent-neon);
+  background: var(--accent-yellow);
   border: none;
-  width: 50px;
-  height: 50px;
+  width: 50px; height: 50px;
   border-radius: 50%;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: center; justify-content: center;
   cursor: pointer;
-  box-shadow: var(--accent-glow);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: 0.2s;
 }
+.send-btn:active { transform: scale(0.9); }
 
-.send-btn:active {
-    transform: scale(0.9);
-}
-
-/* Иконка стрелки внутри кнопки */
-.send-icon {
-    width: 20px;
-    height: 20px;
-    fill: black;
-    transform: translateX(2px); /* Чуть сдвигаем визуально */
-}
-
-
-/* --- Кнопка Колеса (с анимацией покачивания) --- */
-@keyframes tilt-shaking {
-  0% { transform: rotate(0deg); }
-  25% { transform: rotate(3deg); }
-  50% { transform: rotate(0eg); }
-  75% { transform: rotate(-3deg); }
-  100% { transform: rotate(0deg); }
-}
-
-.wheel-btn {
+/* Кнопка Колеса */
+.wheel-trigger {
   position: absolute;
-  top: 75px;
-  right: 20px;
-  background: linear-gradient(45deg, #ff4444, #ff0000);
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 20px;
-  font-weight: bold;
-  font-size: 13px;
+  top: 100px; right: 20px;
+  background: var(--accent-red);
+  padding: 10px 15px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 1px;
   z-index: 5;
-  box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  animation: tilt-shaking 2s infinite ease-in-out; /* Постоянное покачивание */
-  cursor: pointer;
+  border: none;
+  color: #fff;
+  box-shadow: 0 0 20px rgba(255, 60, 0, 0.4);
+  animation: float 3s infinite ease-in-out;
 }
 
-.wheel-icon {
-    font-size: 18px;
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
