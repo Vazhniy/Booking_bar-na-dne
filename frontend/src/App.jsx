@@ -6,7 +6,7 @@ const RENDER_URL = 'https://booking-bar-na-dne.onrender.com';
 
 function App() {
   const [messages, setMessages] = useState([
-    { role: 'bot', text: 'Здорово! Бар «На дне» на связи. Пока Keri не выпила всё сама, давай быстро оформим бронь. Как тебя зовут?' }
+    { role: 'bot', text: 'Привет! Это бар «На дне». Чтобы забронировать стол, напиши мне своё имя, время и телефон. Keri и Shchavlik уже ждут!' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,11 +26,11 @@ function App() {
     try {
       const response = await axios.post(`${RENDER_URL}/api/chat`, {
         message: input,
-        history: messages
+        history: messages.map(m => ({role: m.role, text: m.text}))
       });
       setMessages(prev => [...prev, { role: 'bot', text: response.data.text }]);
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'bot', text: 'Ошибка сети. Бармен проверяет запасы Shchavlik.' }]);
+      setMessages(prev => [...prev, { role: 'bot', text: 'Ошибка связи. Попробуй еще раз.' }]);
     } finally {
       setLoading(false);
     }
@@ -40,7 +40,7 @@ function App() {
     <div className="app-container">
       <header className="header">
         <div className="header-content">
-          <img src="/logo.png" alt="Логотип" className="logo" />
+          <img src="/logo.png" alt="Лого" className="logo" />
           <div className="header-text">
             <h1 className="bar-title">Бар На-дне</h1>
             <p className="bar-address">Зыбицкая, 6</p>
@@ -48,13 +48,15 @@ function App() {
         </div>
       </header>
 
+      <button className="wheel-btn">🎡 КРУТИТЬ</button>
+
       <div className="chat-window">
         {messages.map((msg, i) => (
           <div key={i} className={`message ${msg.role}`}>
             {msg.text}
           </div>
         ))}
-        {loading && <div className="message bot">...</div>}
+        {loading && <div className="message bot" style={{opacity: 0.5}}>Печатает...</div>}
         <div ref={chatEndRef} />
       </div>
 
@@ -66,10 +68,8 @@ function App() {
           onKeyPress={(e) => e.key === 'Enter' && handleSend()}
           placeholder="Напиши бармену..."
         />
-        <button className="send-btn" onClick={handleSend}>
-          <svg viewBox="0 0 24 24" width="20" height="20">
-            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="black"/>
-          </svg>
+        <button className="send-btn" onClick={handleSend} disabled={loading}>
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
       </div>
     </div>
