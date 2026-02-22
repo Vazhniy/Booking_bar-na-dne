@@ -1,206 +1,187 @@
-/* --- Переменные цветов iOS Dark Mode --- */
 :root {
-  --ios-bg: #000000;
-  --ios-bar-bg: rgba(30, 30, 30, 0.75); /* Полупрозрачный фон для размытия */
-  --ios-separator: #38383A;
-  --ios-blue: #0A84FF;
-  --ios-text-primary: #FFFFFF;
-  --ios-text-secondary: #8E8E93;
-  --ios-bubble-user: #0A84FF;
-  --ios-bubble-bot: #262628;
-  --ios-input-bg: #1C1C1E;
+  --bg-dark: #0a0a0a;
+  --bg-gradient: radial-gradient(circle at top right, #1a1a1a, #050505 80%);
+  --accent-yellow: #ffea00; /* Тот самый неоновый желтый */
+  --accent-glow: 0 0 15px rgba(255, 234, 0, 0.4);
+  --glass-bg: rgba(20, 20, 20, 0.85);
+  --text-white: #ffffff;
+  
+  --bot-msg-bg: #1e1e1e;
+  --user-msg-bg: #ffea00;
 }
 
-/* --- Базовые настройки --- */
 * {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
-  /* Используем системный шрифт Apple */
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
 }
 
 html, body, #root {
-  height: 100dvh; /* Фиксация высоты на мобильных */
+  height: 100dvh;
   margin: 0;
   padding: 0;
-  background-color: var(--ios-bg);
-  color: var(--ios-text-primary);
-  overflow: hidden; /* Запрет прокрутки всего тела */
+  overflow: hidden;
+  background: var(--bg-dark);
+  background-image: var(--bg-gradient);
+  color: var(--text-white);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .app-container {
   display: flex;
   flex-direction: column;
   height: 100%;
-  max-width: 600px; /* Ограничение ширины для планшетов/ПК */
+  max-width: 500px;
   margin: 0 auto;
   position: relative;
-  background: var(--ios-bg);
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* --- Шапка (Header) в стиле iOS --- */
+/* --- Header --- */
 .header {
-  /* Учет безопасной зоны сверху (челка iPhone) */
-  padding-top: calc(env(safe-area-inset-top) + 10px);
-  padding-bottom: 12px;
-  padding-left: 8px;
-  padding-right: 8px;
-  
-  background: var(--ios-bar-bg);
-  /* Эффект матового стекла */
-  backdrop-filter: blur(25px) saturate(150%);
-  -webkit-backdrop-filter: blur(25px) saturate(150%);
-  border-bottom: 0.5px solid var(--ios-separator);
-  
-  display: flex;
-  align-items: center;
+  padding: 15px 20px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(255, 234, 0, 0.2);
   z-index: 10;
-  position: absolute; /* Фиксация поверх чата */
-  top: 0;
-  left: 0;
-  right: 0;
 }
 
-/* Кнопка "Назад" (визуальная) */
-.header-back {
-  color: var(--ios-blue);
-  font-size: 17px;
+.header-content {
   display: flex;
   align-items: center;
-  padding-left: 5px;
-  width: 80px; /* Фиксированная ширина для центрирования заголовка */
+  justify-content: center;
+  gap: 15px;
 }
-.header-back span { font-size: 24px; margin-top: -3px; margin-right: 3px; }
 
-/* Центральный заголовок */
-.header-title {
-  flex: 1;
-  text-align: center;
+.logo {
+  height: 50px;
+  width: auto;
+  filter: drop-shadow(0 0 10px rgba(255, 234, 0, 0.5));
+}
+
+.header-text {
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
-.bar-name { font-size: 17px; font-weight: 600; }
-.bar-status { font-size: 12px; color: var(--ios-text-secondary); margin-top: 2px;}
+.bar-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--accent-yellow);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(255, 234, 0, 0.5);
+}
 
-/* Заглушка справа для баланса */
-.header-right { width: 80px; text-align: right; }
+.bar-address {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
 
-
-/* --- Область чата --- */
+/* --- Chat --- */
 .chat-window {
   flex: 1;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
-  padding: 15px;
-  /* Отступы под шапку и подвал */
-  padding-top: 100px; 
-  padding-bottom: 20px;
+  padding: 20px 15px;
   display: flex;
   flex-direction: column;
-  gap: 8px; /* Расстояние между сообщениями */
-}
-
-/* Анимация появления */
-@keyframes popIn {
-    from { opacity: 0; transform: scale(0.9) translateY(10px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
+  gap: 15px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .message {
-  max-width: 75%;
-  padding: 10px 16px;
-  font-size: 17px;
+  max-width: 85%;
+  padding: 12px 18px;
+  border-radius: 20px;
+  font-size: 16px;
   line-height: 1.4;
-  position: relative;
-  animation: popIn 0.25s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-  word-wrap: break-word;
+  animation: slideIn 0.3s ease-out;
 }
 
-/* Сообщение бота (серое слева) */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .bot {
   align-self: flex-start;
-  background-color: var(--ios-bubble-bot);
-  color: var(--ios-text-primary);
-  /* Закругление с хвостиком слева внизу */
-  border-radius: 20px 20px 20px 5px; 
-  margin-left: 5px;
+  background: var(--bot-msg-bg);
+  color: white;
+  border-bottom-left-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Сообщение пользователя (синее справа) */
 .user {
   align-self: flex-end;
-  background-color: var(--ios-bubble-user);
-  color: white;
-  /* Закругление с хвостиком справа внизу */
-  border-radius: 20px 20px 5px 20px;
-  margin-right: 5px;
+  background: var(--user-msg-bg);
+  color: black;
+  font-weight: 600;
+  border-bottom-right-radius: 4px;
+  box-shadow: var(--accent-glow);
 }
 
-
-/* --- Панель ввода (Input Bar) --- */
+/* --- Input --- */
 .input-area {
-  /* Учет безопасной зоны снизу (полоска Home) */
-  padding: 10px 15px calc(10px + env(safe-area-inset-bottom));
-  
-  background: var(--ios-bar-bg);
-  /* Эффект матового стекла */
-  backdrop-filter: blur(25px) saturate(150%);
-  -webkit-backdrop-filter: blur(25px) saturate(150%);
-  border-top: 0.5px solid var(--ios-separator);
-  
+  padding: 15px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(15px);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
-  align-items: flex-end;
-  gap: 12px;
-  z-index: 10;
-}
-
-/* Серая пилюля для ввода */
-.input-wrapper {
-  flex: 1;
-  background: var(--ios-input-bg);
-  border-radius: 20px;
-  border: 0.5px solid rgba(255,255,255,0.1);
-  padding: 8px 15px;
-  display: flex;
+  gap: 10px;
   align-items: center;
-  min-height: 38px;
 }
 
 input {
   flex: 1;
-  background: transparent;
-  border: none;
-  color: var(--ios-text-primary);
-  font-size: 17px;
-  padding: 0;
-  margin: 0;
-  outline: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 20px;
+  border-radius: 25px;
+  color: white;
+  font-size: 16px;
 }
 
-input::placeholder { color: var(--ios-text-secondary); }
+input:focus {
+  outline: none;
+  border-color: var(--accent-yellow);
+  box-shadow: var(--accent-glow);
+}
 
-/* Кнопка отправки (стрелка вверх) */
 .send-btn {
-  width: 34px;
-  height: 34px;
-  background-color: var(--ios-blue);
-  border-radius: 50%;
+  background: var(--accent-yellow);
   border: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-size: 20px;
-  font-weight: 700;
+  box-shadow: var(--accent-glow);
   cursor: pointer;
-  transition: all 0.2s ease;
-  padding-bottom: 2px; /* Корректировка положения стрелки */
 }
 
-/* Неактивная кнопка */
-.send-btn:disabled {
-  background-color: var(--ios-input-bg);
-  color: var(--ios-text-secondary);
+.send-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: black;
+}
+
+/* Колесо */
+.wheel-btn {
+  position: absolute;
+  top: 90px;
+  right: 15px;
+  background: #ff4444;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 12px;
+  z-index: 5;
+  box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
 }
