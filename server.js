@@ -16,8 +16,9 @@ const CHAT_ID = process.env.CHAT_ID;
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
+// ИСПРАВЛЕНИЕ: Используем актуальную модель Gemini 2.5 Flash
 const model = genAI.getGenerativeModel({ 
-    model: "gemini-1.5-flash",
+    model: "gemini-2.5-flash", 
     systemInstruction: `Ты — бармен шот-бара «На дне» на Зыбицкой. Твой стиль: вежливый, но краткий и по делу. Ты ценишь время. 
     ТВОЯ ЗАДАЧА: Собрать данные для брони за МИНИМАЛЬНОЕ количество сообщений. 
     ПРАВИЛА: 
@@ -46,14 +47,11 @@ app.post('/api/chat', async (req, res) => {
     const { message, history } = req.body;
 
     try {
-        // Форматируем историю
         let formattedHistory = history.map(msg => ({
             role: msg.role === 'bot' ? 'model' : 'user',
             parts: [{ text: msg.text }]
         }));
 
-        // === ИСПРАВЛЕНИЕ ОШИБКИ GEMINI ===
-        // Если история начинается с ответа бота (model), просто отрезаем его
         if (formattedHistory.length > 0 && formattedHistory[0].role === 'model') {
             formattedHistory.shift();
         }
