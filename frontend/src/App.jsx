@@ -6,7 +6,7 @@ const RENDER_URL = 'https://booking-bar-na-dne.onrender.com';
 
 function App() {
   const [messages, setMessages] = useState([
-    { role: 'bot', text: 'Здорово! 🥃 Жду тебя "На дне". Пока Keri не разлила все инфузии, а Shchavlik не ушел в депрессию — давай бронировать стол! Как тебя величать и когда ждать?' }
+    { role: 'bot', text: 'Здорово! "На дне" на связи. Как тебя зовут и когда тебя ждать?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -14,10 +14,11 @@ function App() {
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
+  }, [messages]);
 
   const handleSend = async () => {
     if (!input.trim() || loading) return;
+
     const userMsg = { role: 'user', text: input };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
@@ -26,11 +27,11 @@ function App() {
     try {
       const response = await axios.post(`${RENDER_URL}/api/chat`, {
         message: input,
-        history: messages.map(m => ({role: m.role, text: m.text}))
+        history: messages
       });
       setMessages(prev => [...prev, { role: 'bot', text: response.data.text }]);
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'bot', text: 'Ошибка сети. Попробуй еще раз.' }]);
+      setMessages(prev => [...prev, { role: 'bot', text: 'Ошибка сети. Попробуй позже.' }]);
     } finally {
       setLoading(false);
     }
@@ -38,8 +39,14 @@ function App() {
 
   return (
     <div className="app-container">
+      <button className="wheel-btn-ios">🎡</button>
+
       <header className="header">
-        <h1>НА ДНЕ</h1>
+        <button className="back-button"><span>‹</span> Сообщения</button>
+        <div className="header-info">
+          <span className="bar-name">Бар На-дне</span>
+          <span className="bar-address">Зыбицкая, 6</span>
+        </div>
       </header>
 
       <div className="chat-window">
@@ -53,17 +60,18 @@ function App() {
       </div>
 
       <div className="input-area">
-        <input 
-          placeholder="Твой ответ..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-        />
-        <button className="send-btn" onClick={handleSend} disabled={loading}>
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 12H19M19 12L13 6M19 12L13 18" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
+        <div className="input-container">
+          <input 
+            type="text" 
+            placeholder="iMessage"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+          />
+          <button className="send-btn" onClick={handleSend} disabled={!input.trim()}>
+            ↑
+          </button>
+        </div>
       </div>
     </div>
   );
