@@ -6,7 +6,7 @@ const RENDER_URL = 'https://booking-bar-na-dne.onrender.com';
 
 function App() {
   const [messages, setMessages] = useState([
-    { role: 'bot', text: 'Здорово! "На дне" на связи. 🥂 Давай забронируем стол. Как тебя зовут и когда ждать?' }
+    { role: 'bot', text: 'Привет! Я бармен Толик, помогу тебе забронировать столик!😉' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
