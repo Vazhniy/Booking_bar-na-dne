@@ -56,21 +56,17 @@ app.post('/api/chat', async (req, res) => {
 
         const fullSystemPrompt = BASE_PROMPT + `\n\n=== АКТУАЛЬНОЕ РАСПИСАНИЕ ===\n${currentEvents}`;
         
-        // ВАЖНО: Переключили на версию 1.5-flash с большими лимитами
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", systemInstruction: fullSystemPrompt });
+        // Возвращаем рабочую модель 2.5-flash
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", systemInstruction: fullSystemPrompt });
 
         let formattedHistory = history.map(msg => ({
             role: msg.role === 'bot' ? 'model' : 'user',
             parts: [{ text: msg.text }]
         }));
 
-        // Удаляем первое приветственное сообщение бота, чтобы оно не путало ИИ
-        if (formattedHistory.length > 0 && formattedHistory[0].role === 'model') {
-            formattedHistory.shift();
-        }
+        if (formattedHistory.length > 0 && formattedHistory[0].role === 'model') formattedHistory.shift();
 
-        // === ОГРАНИЧИТЕЛЬ ПАМЯТИ ===
-        // Оставляем только последние 6 сообщений, чтобы не перегружать лимиты
+        // Оставляем ограничитель памяти: бот помнит только 6 последних сообщений, чтобы не перегружать API
         if (formattedHistory.length > 6) {
             formattedHistory = formattedHistory.slice(-6);
         }
