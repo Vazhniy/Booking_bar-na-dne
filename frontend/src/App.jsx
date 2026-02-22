@@ -2,16 +2,19 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './App.css';
 
+// ВАЖНО: Убедись, что тут твоя актуальная ссылка с Render
 const RENDER_URL = 'https://booking-bar-na-dne.onrender.com';
 
 function App() {
+  // Начальное сообщение от "бармена"
   const [messages, setMessages] = useState([
-    { role: 'bot', text: 'Здорово! "На дне" на связи. Как тебя зовут и когда тебя ждать?' }
+    { role: 'bot', text: 'Здорово! Бар «На дне» на связи. Как тебя зовут и когда ждать?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef(null);
 
+  // Автопрокрутка вниз при новом сообщении
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -21,17 +24,20 @@ function App() {
 
     const userMsg = { role: 'user', text: input };
     setMessages(prev => [...prev, userMsg]);
-    setInput('');
+    const currentInput = input;
+    setInput(''); // Очищаем поле сразу
     setLoading(true);
 
     try {
       const response = await axios.post(`${RENDER_URL}/api/chat`, {
-        message: input,
-        history: messages
+        message: currentInput,
+        // Отправляем историю для контекста
+        history: messages.map(m => ({role: m.role, text: m.text}))
       });
       setMessages(prev => [...prev, { role: 'bot', text: response.data.text }]);
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'bot', text: 'Ошибка сети. Попробуй позже.' }]);
+      console.error("Ошибка:", error);
+      setMessages(prev => [...prev, { role: 'bot', text: 'Проблемы со связью. Попробуй еще раз.' }]);
     } finally {
       setLoading(false);
     }
@@ -39,28 +45,34 @@ function App() {
 
   return (
     <div className="app-container">
-      <button className="wheel-btn-ios">🎡</button>
-
+      
+      {/* Шапка в стиле iOS */}
       <header className="header">
-        <button className="back-button"><span>‹</span> Сообщения</button>
-        <div className="header-info">
-          <span className="bar-name">Бар На-дне</span>
-          <span className="bar-address">Зыбицкая, 6</span>
+        <div className="header-back">
+          <span>‹</span> Назад
         </div>
+        <div className="header-title">
+          <span className="bar-name">Бар На-дне</span>
+          <span className="bar-status">Зыбицкая, 6</span>
+        </div>
+        <div className="header-right"></div> {/* Заглушка для баланса */}
       </header>
 
+      {/* Окно чата */}
       <div className="chat-window">
         {messages.map((msg, i) => (
           <div key={i} className={`message ${msg.role}`}>
             {msg.text}
           </div>
         ))}
-        {loading && <div className="message bot">...</div>}
-        <div ref={chatEndRef} />
+        {/* Простой индикатор загрузки в стиле iOS */}
+        {loading && <div className="message bot" style={{color: '#8E8E93'}}>...</div>}
+        <div ref={chatEndRef} /> {/* Якорь для прокрутки */}
       </div>
 
+      {/* Панель ввода в стиле iMessage */}
       <div className="input-area">
-        <div className="input-container">
+        <div className="input-wrapper">
           <input 
             type="text" 
             placeholder="iMessage"
@@ -68,10 +80,14 @@ function App() {
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
           />
-          <button className="send-btn" onClick={handleSend} disabled={!input.trim()}>
-            ↑
-          </button>
         </div>
+        <button 
+            className="send-btn" 
+            onClick={handleSend} 
+            disabled={!input.trim() || loading}
+        >
+          ↑
+        </button>
       </div>
     </div>
   );
