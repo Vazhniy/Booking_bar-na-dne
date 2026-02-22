@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
 import dotenv from 'dotenv';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 dotenv.config();
 
@@ -13,19 +14,19 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const CHAT_ID = process.env.CHAT_ID;
 
-const SYSTEM_PROMPT = `
-Ты — бармен шот-бара «На дне» на Зыбицкой. 
-Твой стиль: вежливый, но краткий и по делу. Ты ценишь время.
+// Инициализируем официальный SDK Google
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-ТВОЯ ЗАДАЧА:
-Собрать данные для брони за МИНИМАЛЬНОЕ количество сообщений.
-
-ПРАВИЛА ДИАЛОГА:
-1. В самом первом сообщении поприветствуй гостя и СРАЗУ попроси: Имя, Время, Кол-во людей, Повод и Телефон.
-2. Если гость прислал не всё — коротко переспроси только недостающее.
-3. Если всё прислано — напиши "Бронь принята!" и заверши диалог.
-4. Пиши коротко.
-`;
+// Настраиваем модель и её характер
+const model = genAI.getGenerativeModel({ 
+    model: "gemini-1.5-flash",
+    systemInstruction: `Ты — бармен шот-бара «На дне» на Зыбицкой. Твой стиль: вежливый, но краткий и по делу. Ты ценишь время. 
+    ТВОЯ ЗАДАЧА: Собрать данные для брони за МИНИМАЛЬНОЕ количество сообщений. 
+    ПРАВИЛА: 
+    1. СРАЗУ попроси: Имя, Время, Кол-во людей, Повод и Телефон. 
+    2. Переспрашивай только недостающее. 
+    3. Если всё прислано — напиши "Бронь принята!" и заверши диалог.`
+});
 
 async function sendToTelegram(bookingData) {
     const text = `🔔 **НОВАЯ БРОНЬ "НА ДНЕ"**\n\n` +
@@ -47,30 +48,30 @@ app.post('/api/chat', async (req, res) => {
     const { message, history } = req.body;
 
     try {
-        const response = await axios.post(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-            {
-                contents: [
-                    { role: "user", parts: [{ text: SYSTEM_PROMPT }] },
-                    ...history.map(msg => ({
-                        role: msg.role === 'bot' ? 'model' : 'user',
-                        parts: [{ text: msg.text }]
-                    })),
-                    { role: "user", parts: [{ text: message }] }
-                ]
-            }
-        );
+        // Подготавливаем историю для SDK
+        const formattedHistory = history.map(msg => ({
+            role: msg.role === 'bot' ? 'model' : 'user',
+            parts: [{ text: msg.text }]
+        }));
 
-        const botResponse = response.data.candidates[0].content.parts[0].text;
+        // Запускаем чат
+        const chat = model.startChat({
+            history: formattedHistory
+        });
 
+        // Отправляем сообщение
+        const result = await chat.sendMessage(message);
+        const botResponse = result.response.text();
+
+        // Проверяем, принята ли бронь
         if (botResponse.toLowerCase().includes("бронь принята") || botResponse.toLowerCase().includes("записал")) {
             await sendToTelegram(message);
         }
 
         res.json({ text: botResponse });
     } catch (error) {
-        console.error('Ошибка Gemini:', error.response?.data || error.message);
-        res.status(500).json({ text: 'Ошибка связи с ИИ. Проверь настройки сервера.' });
+        console.error('Ошибка Gemini:', error);
+        res.status(500).json({ text: 'Проблемы со связью с ИИ. Бармен пошел проверять запасы.' });
     }
 });
 
