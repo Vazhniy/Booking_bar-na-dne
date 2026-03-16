@@ -1,81 +1,65 @@
-/* === ЖЕСТКАЯ ФИКСАЦИЯ ЭКРАНА ДЛЯ МОБИЛЬНЫХ === */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+/* === БАЗОВЫЕ НАСТРОЙКИ === */
 html, body { 
-  margin: 0; 
-  padding: 0; 
-  height: 100%; 
-  overflow: hidden; /* Намертво запрещаем скролл всей страницы */
-  background-color: #0d0a14;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  margin: 0; padding: 0; height: 100%; overflow: hidden; 
+  background-color: #050505; 
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   color: #ffffff;
-  -webkit-text-size-adjust: 100%; /* Запрещаем системный зум шрифтов */
+  -webkit-text-size-adjust: 100%; 
 }
 
-/* Контейнер теперь использует 100dvh — это умная высота, 
-которая не прячется за адресной строкой мобильного браузера */
 .app-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh; /* Фолбэк для старых браузеров */
-  height: 100dvh; /* Идеально для iOS/Android */
-  max-width: 600px;
-  margin: 0 auto;
-  background-color: #141026;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+  display: flex; flex-direction: column;
+  height: 100vh; height: 100dvh; 
+  max-width: 600px; margin: 0 auto;
+  /* Глубокий радиальный градиент для фона */
+  background: radial-gradient(circle at 50% 0%, #2a1147 0%, #0d0a14 60%, #050505 100%);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
   position: relative;
 }
 
+/* === ШАПКА: ЭФФЕКТ МАТОВОГО СТЕКЛА === */
 .header {
-  background-color: #0b0914;
-  /* Умный отступ: базовые 15px + высота Dynamic Island/челки айфона */
+  background: rgba(13, 10, 20, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   padding-top: calc(15px + env(safe-area-inset-top));
-  padding-right: 20px;
-  padding-bottom: 15px;
-  padding-left: 20px;
-  border-bottom: 1px solid #2a2146;
+  padding-right: 20px; padding-bottom: 15px; padding-left: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   flex-shrink: 0;
+  z-index: 10;
 }
 
 .header-content { display: flex; align-items: center; gap: 15px; }
 
 .logo {
-  width: 50px; height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
+  width: 48px; height: 48px; border-radius: 50%; object-fit: cover;
+  box-shadow: 0 0 15px rgba(123, 44, 191, 0.5); /* Неоновое свечение логотипа */
 }
 
-.bar-title { font-size: 1.5rem; color: #ffffff; margin-bottom: 3px; }
-.bar-address { font-size: 0.9rem; color: #8a7fa3; }
+.bar-title { font-size: 1.35rem; font-weight: 600; color: #ffffff; margin: 0 0 2px 0; letter-spacing: 0.5px;}
+.bar-address { font-size: 0.85rem; color: #a093b8; margin: 0; font-weight: 400;}
 
-/* === НАСТРОЙКИ СКРОЛЛА ЧАТА === */
+/* === ЗОНА ЧАТА === */
 .chat-window {
-  flex: 1; 
-  overflow-y: auto; 
-  padding: 20px;
-  display: flex; 
-  flex-direction: column; 
-  gap: 15px;
+  flex: 1; overflow-y: auto; padding: 20px;
+  display: flex; flex-direction: column; gap: 18px;
   scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch; /* Делает скролл на iPhone мягким и инерционным */
+  -webkit-overflow-scrolling: touch;
 }
 
-/* === АНИМАЦИЯ ПОЯВЛЕНИЯ СООБЩЕНИЙ (ЭФФЕКТ ПРУЖИНКИ) === */
+/* Прячем системный скроллбар для эстетики */
+.chat-window::-webkit-scrollbar { width: 0px; }
+
+/* Анимация пружинки */
 @keyframes messagePop {
-  0% { 
-    opacity: 0; 
-    transform: translateY(30px) scale(0.95); 
-  }
-  100% { 
-    opacity: 1; 
-    transform: translateY(0) scale(1); 
-  }
+  0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .message-row {
-  display: flex;
-  gap: 10px;
-  align-items: flex-end;
-  width: 100%;
-  /* Применяем красивую анимацию появления к каждому новому сообщению */
+  display: flex; gap: 10px; align-items: flex-end; width: 100%;
   animation: messagePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
@@ -83,61 +67,71 @@ html, body {
 .message-row.user { justify-content: flex-end; }
 
 .bot-avatar {
-  width: 36px; height: 36px;
-  border-radius: 50%; object-fit: cover;
-  flex-shrink: 0; border: 1px solid #362a59;
+  width: 32px; height: 32px; border-radius: 50%; object-fit: cover;
+  flex-shrink: 0; border: 1px solid rgba(123, 44, 191, 0.5);
+  box-shadow: 0 0 10px rgba(123, 44, 191, 0.2);
 }
 
 .message {
-  max-width: 80%; padding: 12px 16px;
-  border-radius: 18px; line-height: 1.4;
-  word-wrap: break-word; font-size: 1rem;
+  max-width: 82%; padding: 14px 18px;
+  border-radius: 22px; line-height: 1.5;
+  word-wrap: break-word; font-size: 0.95rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 .message.bot {
-  background-color: #2a2146; color: #e5dfff;
-  border-bottom-left-radius: 4px; white-space: pre-wrap;
-  border: 1px solid #362a59;
+  background: rgba(42, 33, 70, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #e8e3f5;
+  border-bottom-left-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .message.user {
-  background-color: #6347c0; color: white;
-  border-bottom-right-radius: 4px;
+  background: linear-gradient(135deg, #7b2cbf 0%, #5a189a 100%);
+  color: white;
+  border-bottom-right-radius: 6px;
+  box-shadow: 0 4px 15px rgba(123, 44, 191, 0.35); /* Свечение сообщений гостя */
 }
 
-/* === ЗОНА ВВОДА С УЧЕТОМ ПОЛОСКИ IPHONE (HOME BAR) === */
+/* === ПАРЯЩЕЕ ПОЛЕ ВВОДА === */
 .input-area {
-  display: flex; 
-  padding: 15px;
-  /* env(safe-area-inset-bottom) автоматически добавляет отступ, чтобы инпут не перекрывался системной полоской iOS */
-  padding-bottom: calc(15px + env(safe-area-inset-bottom)); 
-  background-color: #0b0914;
-  border-top: 1px solid #2a2146;
-  gap: 10px; 
-  align-items: center;
-  flex-shrink: 0;
+  padding: 10px 20px calc(15px + env(safe-area-inset-bottom));
+  background: transparent; /* Убрали жесткий фон, чтобы было видно градиент подложки */
+  flex-shrink: 0; display: flex; gap: 12px; align-items: center;
 }
 
-.input-wrapper { flex: 1; }
+.input-wrapper { flex: 1; position: relative; }
 
 .input-wrapper input {
-  width: 100%; padding: 14px 20px;
-  border-radius: 25px; border: 1px solid #2a2146;
-  background-color: #1c1633; color: white;
-  /* Размер 16px КРИТИЧЕСКИ ВАЖЕН: если меньше, iPhone начнет жестко зумить экран при клике */
-  font-size: 16px; 
-  outline: none; transition: 0.2s;
+  width: 100%; padding: 16px 22px;
+  border-radius: 30px; 
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(20, 15, 35, 0.85); 
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  color: white; font-size: 16px; outline: none; transition: 0.3s;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
 }
 
-.input-wrapper input:focus { border-color: #6347c0; }
-.input-wrapper input::placeholder { color: #8a7fa3; }
+.input-wrapper input:focus { 
+  border-color: #7b2cbf; 
+  box-shadow: 0 0 15px rgba(123, 44, 191, 0.4), 0 4px 20px rgba(0, 0, 0, 0.3);
+  background: rgba(25, 18, 45, 0.95);
+}
+.input-wrapper input::placeholder { color: #6b5c87; font-weight: 500; }
 
 .send-btn {
-  background-color: #6347c0; border: none;
-  border-radius: 50%; width: 50px; height: 50px;
+  background: linear-gradient(135deg, #7b2cbf 0%, #5a189a 100%);
+  border: none; border-radius: 50%; 
+  width: 52px; height: 52px;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: 0.2s; flex-shrink: 0;
+  cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+  flex-shrink: 0;
+  box-shadow: 0 4px 15px rgba(123, 44, 191, 0.4);
 }
 
-.send-btn:active { transform: scale(0.9); }
-.send-btn svg { width: 24px; height: 24px; fill: white; }
+.send-btn:active { transform: scale(0.9); box-shadow: 0 2px 8px rgba(123, 44, 191, 0.4); }
+/* Сдвинули иконку чуть правее для визуального баланса в круге */
+.send-btn svg { width: 22px; height: 22px; fill: white; transform: translateX(2px); }
