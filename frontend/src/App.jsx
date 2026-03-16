@@ -6,7 +6,7 @@ const RENDER_URL = 'https://booking-bar-na-dne.onrender.com';
 
 function App() {
   const [messages, setMessages] = useState([
-    { role: 'bot', text: 'Салют! На связи Толик — твой кибер-бармен в руин-баре «На дне». 🥃 Столики у нас разлетаются быстрее, чем шоты в пятницу, но я могу придержать для тебя отличное место! А если хочешь знать, под чьи биты будем отрываться и какие спешлы стынут на баре — солью все инсайды. Ну что, забиваем место или сначала изучаем афишу?' }
+    { role: 'bot', text: 'Привет! Я Толик — бессменный бармен руин-бара «На дне». 🥃 Могу организовать вам столик, пока еще остались места, или рассказать, какие диджеи и акции у нас планируются. Чего изволите: бронируем или просвещаемся?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -53,7 +53,6 @@ function App() {
       <div className="chat-window">
         {messages.map((msg, i) => (
           <div key={i} className={`message-row ${msg.role}`}>
-            {/* Аватарка показывается только для бота */}
             {msg.role === 'bot' && (
               <img src="/logo.png" alt="Толик" className="bot-avatar" />
             )}
@@ -62,10 +61,16 @@ function App() {
             </div>
           </div>
         ))}
+        
+        {/* === НОВЫЙ КРАСИВЫЙ ИНДИКАТОР ПЕЧАТИ === */}
         {loading && (
           <div className="message-row bot">
             <img src="/logo.png" alt="Толик" className="bot-avatar" />
-            <div className="message bot" style={{opacity: 0.5}}>...</div>
+            <div className="typing-indicator">
+              <div className="typing-dot"></div>
+              <div className="typing-dot"></div>
+              <div className="typing-dot"></div>
+            </div>
           </div>
         )}
         <div ref={chatEndRef} />
