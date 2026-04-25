@@ -80,8 +80,8 @@ app.post('/api/chat', async (req, res) => {
 
         const fullSystemPrompt = BASE_PROMPT + `\n\n=== АКТУАЛЬНОЕ РАСПИСАНИЕ ===\n${currentEvents}`;
         
-        // Оставил стабильную версию 1.5, чтобы было меньше сбоев
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", systemInstruction: fullSystemPrompt });
+        // === ВЕРНУЛИ АКТУАЛЬНУЮ И РАБОЧУЮ МОДЕЛЬ 2.5 ===
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", systemInstruction: fullSystemPrompt });
 
         let formattedHistory = history.map(msg => ({
             role: msg.role === 'bot' ? 'model' : 'user',
@@ -93,7 +93,7 @@ app.post('/api/chat', async (req, res) => {
 
         const chat = model.startChat({ history: formattedHistory });
         
-        // === ИСПОЛЬЗУЕМ НАШУ НОВУЮ ФУНКЦИЮ С RETRY ===
+        // === ИСПОЛЬЗУЕМ НАШУ ФУНКЦИЮ С RETRY ===
         const result = await sendMessageWithRetry(chat, message);
         let botResponse = result.response.text();
 
