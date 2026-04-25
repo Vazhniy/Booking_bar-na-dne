@@ -43,6 +43,31 @@ const BASE_PROMPT = `
 Телефон: [Телефон]
 `;
 
+// === ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ПАУЗЫ ===
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// === ЛОГИКА ПОВТОРНЫХ ПОПЫТОК (RETRY WITH EXPONENTIAL BACKOFF) ===
+async function sendMessageWithRetry(chat, message, maxRetries = 3) {
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+            // Пытаемся отправить запрос к Gemini
+            return await chat.sendMessage(message); 
+        } catch (error) {
+            // Если это была последняя попытка — сдаемся и пробрасываем ошибку дальше
+            if (attempt === maxRetries - 1) {
+                console.error(`❌ Все ${maxRetries} попытки исчерпаны. Ошибка:`, error.message);
+                throw error; 
+            }
+            
+            // Считаем паузу: 1000ms, 2000ms, 4000ms + случайные 0-500ms (jitter)
+            const waitTime = Math.pow(2, attempt) * 1000 + Math.random() * 500; 
+            console.warn(`⚠️ Сервер перегружен. Попытка ${attempt + 1} не удалась. Ждем ${Math.round(waitTime)}мс перед новой попыткой...`);
+            
+            await sleep(waitTime); // Ждем и идем на следующий круг цикла
+        }
+    }
+}
+
 app.get('/ping', (req, res) => res.status(200).send('Толик на смене!'));
 
 app.post('/api/chat', async (req, res) => {
@@ -54,7 +79,9 @@ app.post('/api/chat', async (req, res) => {
         }
 
         const fullSystemPrompt = BASE_PROMPT + `\n\n=== АКТУАЛЬНОЕ РАСПИСАНИЕ ===\n${currentEvents}`;
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", systemInstruction: fullSystemPrompt });
+        
+        // Оставил стабильную версию 1.5, чтобы было меньше сбоев
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", systemInstruction: fullSystemPrompt });
 
         let formattedHistory = history.map(msg => ({
             role: msg.role === 'bot' ? 'model' : 'user',
@@ -65,7 +92,9 @@ app.post('/api/chat', async (req, res) => {
         if (formattedHistory.length > 6) formattedHistory = formattedHistory.slice(-6);
 
         const chat = model.startChat({ history: formattedHistory });
-        const result = await chat.sendMessage(message);
+        
+        // === ИСПОЛЬЗУЕМ НАШУ НОВУЮ ФУНКЦИЮ С RETRY ===
+        const result = await sendMessageWithRetry(chat, message);
         let botResponse = result.response.text();
 
         let telegramData = null;
@@ -81,12 +110,12 @@ app.post('/api/chat', async (req, res) => {
 
         res.json({ text: botResponse, showWheel, telegramData });
     } catch (error) {
-        console.error('Ошибка Gemini:', error);
-        res.status(500).json({ text: 'Упс, я немного отвлекся на наливку. Повтори-ка, что ты сказал?' });
+        console.error('Критическая ошибка Gemini:', error);
+        res.status(500).json({ text: 'Упс, я немного отвлекся на наливку. Сервера сегодня горят. Повтори-ка, что ты сказал?' });
     }
 });
 
-// НОВЫЙ МАРШРУТ: Отправляет финальную бронь после вращения колеса
+// Отправка финальной брони после вращения колеса
 app.post('/api/telegram', async (req, res) => {
     const { telegramData, wonShot } = req.body;
     const text = `🔔 **НОВАЯ БРОНЬ "НА ДНЕ"**\n\n👤 Данные:\n${telegramData}\n\n🎁 Выиграли: **${wonShot}**\n📍 Место: Шот-бар На Дне`;
