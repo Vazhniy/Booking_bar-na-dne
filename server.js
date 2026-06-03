@@ -8,10 +8,22 @@ import rateLimit from 'express-rate-limit'; // Подключаем защиту
 dotenv.config();
 
 const app = express();
-// ВАЖНО: Разрешаем доверять прокси-серверам (нужно для Render/Heroku, чтобы правильно определять IP гостей)
+// ВАЖНО: Разрешаем доверять прокси-серверам
 app.set('trust proxy', 1); 
 
-app.use(cors());
+// === 1. ТЕХНИЧЕСКАЯ БЕЗОПАСНОСТЬ: ЖЕСТКИЙ CORS ===
+// Разрешаем запросы только с твоего сайта и локального компьютера (для тестов)
+const allowedOrigins = ['https://booking-bar-na-dne.onrender.com', 'http://localhost:3000'];
+app.use(cors({
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Доступ запрещен настройками CORS'));
+        }
+    }
+}));
+
 app.use(express.json());
 app.use(express.static('build')); 
 
@@ -22,15 +34,25 @@ const SHEET_URL = process.env.SHEET_URL;
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-// === НАСТРОЙКА ЗАЩИТЫ ОТ СПАМА ===
+// === ЗАЩИТА ЧАТА ОТ СПАМА ===
 const chatLimiter = rateLimit({
     windowMs: 60 * 1000, // Окно времени: 1 минута
     max: 7, // Максимум 7 запросов с одного IP в минуту
     handler: (req, res) => {
-        // Выдаем ответ с кодом 200, чтобы фронтенд не выдал ошибку сервера, 
-        // а просто напечатал саркастичный ответ Толика в чат.
         res.status(200).json({ 
             text: 'Воу-воу, полегче, пулеметчик! Я не осьминог. Дай мне минуту перекурить, а то от твоих сообщений у меня шейкер дымится.' 
+        });
+    }
+});
+
+// === 2. ТЕХНИЧЕСКАЯ БЕЗОПАСНОСТЬ: ЗАЩИТА TELEGRAM ОТ СПАМА ===
+const telegramLimiter = rateLimit({
+    windowMs: 60 * 1000, // Окно времени: 1 минута
+    max: 2, // Максимум 2 заявки на бронь в минуту
+    handler: (req, res) => {
+        res.status(429).json({ 
+            success: false, 
+            message: 'Слишком много отправок. Подождите минуту.' 
         });
     }
 });
@@ -146,7 +168,6 @@ async function sendMessageWithRetry(chat, message, maxRetries = 3) {
 
 app.get('/ping', (req, res) => res.status(200).send('Толик на смене!'));
 
-// ПРИМЕНЯЕМ ЛИМИТЕР ТОЛЬКО К ЭНДПОИНТУ ЧАТА
 app.post('/api/chat', chatLimiter, async (req, res) => {
     const { message, history } = req.body;
     try {
@@ -184,12 +205,14 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
 
         res.json({ text: botResponse, showWheel, telegramData });
     } catch (error) {
-        console.error('КритиОшибка Gemini:', error);
+        // === 3. ПОПРАВЛЕНА ОПЕЧАТКА ===
+        console.error('Критическая ошибка Gemini:', error);
         res.status(500).json({ text: 'Упс, сервера сегодня горят. Повтори-ка, что ты сказал?' });
     }
 });
 
-app.post('/api/telegram', async (req, res) => {
+// ПРИМЕНЯЕМ НОВЫЙ ЛИМИТЕР К ЭНДПОИНТУ TELEGRAM
+app.post('/api/telegram', telegramLimiter, async (req, res) => {
     const { telegramData, wonShot } = req.body;
     const text = `🔔 **НОВАЯ БРОНЬ "НА ДНЕ"**\n\n👤 Данные:\n${telegramData}\n\n🎁 Выиграли: **${wonShot}**\n📍 Место: Шот-бар На Дне`;
     try {
