@@ -11,18 +11,7 @@ const app = express();
 // ВАЖНО: Разрешаем доверять прокси-серверам
 app.set('trust proxy', 1); 
 
-// === 1. ТЕХНИЧЕСКАЯ БЕЗОПАСНОСТЬ: ЖЕСТКИЙ CORS ===
-// Разрешаем запросы только с твоего сайта и локального компьютера (для тестов)
-const allowedOrigins = ['https://booking-bar-na-dne.onrender.com', 'http://localhost:3000'];
-app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Доступ запрещен настройками CORS'));
-        }
-    }
-}));
+app.use(cors());
 
 app.use(express.json());
 app.use(express.static('build')); 
