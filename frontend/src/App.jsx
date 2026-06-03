@@ -5,19 +5,19 @@ import './App.css';
 const RENDER_URL = 'https://booking-bar-na-dne.onrender.com';
 const DRINKS = ["Щавлик", "Кэри", "Цитрон", "Мандарини", "Молочник", "Черрибос", "Рафалия"];
 
-// === ПОЛНАЯ БАЗА ЗНАНИЙ ВСЕХ ТЕХКАРТ ДЛЯ ЛОКАЛЬНОГО КАЛЬКУЛЯТОРА ===
+// === БАЗА ЗНАНИЙ ТЕХКАРТ ===
 const RECIPES = {
   "Щавлик": { base: 1000, assembly: { "Водка Schmidt": 450, "П/ф сироп щавель": 270, "П/ф раствор яблочной кислоты": 280, "Ароматизатор манго (по вкусу)": 0 }, prep: { "П/ф сироп щавель": { "Сахарный сироп": 1000, "Щавель свежий (г)": 140 } } },
   "Ежевичная": { base: 1000, assembly: { "П/ф Иван чай": 600, "П/ф сироп ежевика": 300, "Р-р яблочной кислоты": 100 }, prep: { "П/ф Иван чай": { "Водка Schmidt": 1000, "Иван чай (г)": 10 }, "П/ф сироп ежевика": { "Сахарный сироп": 1000, "Ежевика с/м (г)": 650 } } },
   "Спотыкач": { base: 1000, assembly: { "П/ф Ч.смородина": 720, "Сахарный сироп": 280 }, prep: { "П/ф Ч.смородина": { "Водка Schmidt": 1000, "Ч.смородина (г)": 800, "Можжевельник (г)": 5 } } },
   "Перцовка": { base: 1000, assembly: { "П/ф перцовая": 880, "Сахарный сироп": 120 }, prep: { "П/ф перцовая": { "Водка Schmidt": 1000, "Чили (г)": 25, "Желт.перец (г)": 100, "Душистый перец (г)": 3, "Тмин (г)": 2 } } },
   "Померанцевка": { base: 1000, assembly: { "П/ф на корках": 700, "Сахарный сироп": 300 }, prep: { "П/ф на корках": { "Водка Schmidt": 1000, "Цедра апельсин (г)": 35, "Цедра лимон (г)": 8, "Мякоть апельсин (г)": 140 } } },
-  "Крамбамбуля": { base: 3255, assembly: { "П/ф Крамбамбуля": 2400, "П/ф Чили": 45, "Сахарный сироп": 510, "Вода": 300 }, prep: { "П/ф Крамбаbуля": { "Водка Schmidt": 2400, "Апельсин корки (г)": 48, "Апельсин мякоть (г)": 384, "Корица (г)": 19.2, "Гвоздика (г)": 4.8, "Душистый перец (г)": 1.92, "Бадьян (г)": 1.92, "Кардамон (г)": 1.92 } } },
+  "Крамбамбуля": { base: 3255, assembly: { "П/ф Крамбамбуля": 2400, "П/ф Чили": 45, "Сахарный сироп": 510, "Вода": 300 }, prep: { "П/ф Крамбамбуля": { "Водка Schmidt": 2400, "Апельсин корки (г)": 48, "Апельсин мякоть (г)": 384, "Корица (г)": 19.2, "Гвоздика (г)": 4.8, "Душистый перец (г)": 1.92, "Бадьян (г)": 1.92, "Кардамон (г)": 1.92 } } },
   "Хреновуха": { base: 1000, assembly: { "П/ф Хреновуха": 920, "Сахарный сироп": 80 }, prep: { "П/ф Хреновуха": { "Водка Schmidt": 700, "Хрен (г)": 70, "Душ.перец (шт)": 7, "Чили (г)": 15 } } },
   "Сумерки": { base: 1000, assembly: { "П/ф Лаванда": 480, "Balance Смор/чер": 360, "Ябл.кордиал": 120, "Вода": 40 }, prep: { "П/ф Лаванда": { "Водка Schmidt": 1000, "Лаванда (г)": 4 } } },
   "Клюковка": { base: 1000, assembly: { "П/ф Настойка Лапсанг": 500, "П/ф Сироп клюква": 500 }, prep: { "П/ф Настойка Лапсанг": { "Водка Schmidt": 500, "Чай лапсанг (г)": 1.5 }, "П/ф Сироп клюква": { "Сахарный сироп": 500, "Клюква (г)": 500, "Соль (г)": 2 } } },
   "Рафалия": { base: 1000, assembly: { "П/ф малина": 40, "П/ф черника": 90, "П/ф клубника": 65, "П/ф вишня": 90, "П/ф клюква": 65, "П/ф черная смородина": 90, "П/ф на корках": 90, "П/ф ябл.кордиал": 110, "Сахарный сироп": 180, "Вода": 180 }, prep: { "П/ф малина": { "Водка Schmidt": 40, "Малина (г)": 18 }, "П/ф черника": { "Водка Schmidt": 90, "Черника (г)": 72 }, "П/ф клубника": { "Водка Schmidt": 65, "Клубника (г)": 52 }, "П/ф вишня": { "Водка Schmidt": 90, "Вишня (г)": 90 }, "П/ф клюква": { "Водка Schmidt": 65, "Клюква (г)": 52 }, "П/ф черная смородина": { "Водка Schmidt": 90, "Ч.смородина (г)": 72 }, "П/ф на корках": { "Водка Schmidt": 90, "Цедра апельсин (г)": 3.15, "Цедра лимон (г)": 0.72, "Мякоть апельсин (г)": 12.6 } } },
-  "Barbie": { base: 1015, assembly: { "Водка Schmidt": 300, "Концентрат Richeza черника-мята": 70, "П/ф сироп Черника": 100, "Сироп Richeza дыня": 140, "Сливки 10%": 175, "Молоко": 175, "Вода": 50, "Молочная кислота": 5 } },
+  "Барби": { base: 1015, assembly: { "Водка Schmidt": 300, "Концентрат Richeza черника-мята": 70, "П/ф сироп Черника": 100, "Сироп Richeza дыня": 140, "Сливки 10%": 175, "Молоко": 175, "Вода": 50, "Молочная кислота": 5 } },
   "Крестный молочник": { base: 720, assembly: { "Виски": 200, "Молоко": 200, "Сливки 10%": 200, "П/ф Медовый сироп": 100, "Сироп попкорн": 20 } },
   "Кэри": { base: 1000, assembly: { "Водка Schmidt": 300, "Balance Киви/Лемонграсс": 500, "Ябл.кордиал": 100, "Вода": 100 } },
   "Минталлика": { base: 1000, assembly: { "Водка Schmidt": 300, "Balance Мята": 500, "Ябл.кордиал": 100, "Вода": 100 } },
@@ -47,13 +47,11 @@ function App() {
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef(null);
 
-  // Стейт Колеса: showModal открывает само окно, showButton показывает кнопку под чатом
   const [wheelState, setWheelState] = useState({ showModal: false, showButton: false, pendingData: null });
   const [spinning, setSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [wonShot, setWonShot] = useState(null);
 
-  // Стейты калькулятора сотрудников
   const [isEmployeeMode, setIsEmployeeMode] = useState(false);
   const [showCalc, setShowCalc] = useState(false);
   const [volumes, setVolumes] = useState({});
@@ -83,7 +81,6 @@ function App() {
       });
       setMessages(prev => [...prev, { role: 'bot', text: response.data.text }]);
       
-      // Вместо авто-вызова модалки, сначала просто делаем видимой кнопку под чатом
       if (response.data.showWheel && response.data.telegramData) {
         setWheelState({ showModal: false, showButton: true, pendingData: response.data.telegramData });
       }
@@ -112,7 +109,6 @@ function App() {
       setSpinning(false);
       setWonShot(DRINKS[randomIndex]);
       
-      // Защищаем отправку в ТГ блоком try/catch, чтобы при сбое сети колесо не висло
       try {
           await axios.post(`${RENDER_URL}/api/telegram`, {
             telegramData: wheelState.pendingData,
@@ -124,7 +120,6 @@ function App() {
 
       setMessages(prev => [...prev, { role: 'bot', text: `🎉 Выпало: **${DRINKS[randomIndex]}**! Записал, приготовил. Жду вас на баре!` }]);
 
-      // Закрываем окно через 4 секунды после выигрыша
       setTimeout(() => {
         setWheelState({ showModal: false, showButton: false, pendingData: null });
         setWonShot(null);
@@ -209,7 +204,6 @@ function App() {
           </div>
         )}
         
-        {/* КНОПКА ЗАПУСКА КОЛЕСА (показывается прямо в ленте чата) */}
         {wheelState.showButton && (
            <div style={{ textAlign: 'center', marginTop: '10px', animation: 'messagePop 0.4s ease forwards' }}>
              <button onClick={openWheelModal} style={{
@@ -234,7 +228,6 @@ function App() {
         </button>
       </div>
 
-      {/* МОДАЛЬНОЕ ОКНО С КОЛЕСОМ */}
       {wheelState.showModal && (
         <div className="wheel-modal">
           <div className="wheel-modal-content">
@@ -246,7 +239,13 @@ function App() {
                 {DRINKS.map((drink, i) => {
                   const angle = i * (360 / DRINKS.length) + (360 / DRINKS.length / 2);
                   return (
-                    <div className="wheel-label" key={i} style={{ transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(-105px)` }}>{drink}</div>
+                    <div 
+                      className="wheel-label" 
+                      key={i} 
+                      style={{ transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(-100px)` }}
+                    >
+                      {drink}
+                    </div>
                   );
                 })}
               </div>
@@ -258,7 +257,6 @@ function App() {
         </div>
       )}
 
-      {/* МОДАЛЬНОЕ ОКНО КАЛЬКУЛЯТОРА ДЛЯ БАРМЕНОВ */}
       {showCalc && (
         <div className="calc-modal">
           <div className="calc-modal-content">
