@@ -5,19 +5,19 @@ import './App.css';
 const RENDER_URL = 'https://booking-bar-na-dne.onrender.com';
 const DRINKS = ["Щавлик", "Кэри", "Цитрон", "Мандарини", "Молочник", "Черрибос", "Рафалия"];
 
-// === ПОЛНАЯ БАЗА ЗНАНИЙ ВСЕХ ТЕХКАРТ ===
+// === ПОЛНАЯ БАЗА ЗНАНИЙ ВСЕХ ТЕХКАРТ ДЛЯ ЛОКАЛЬНОГО КАЛЬКУЛЯТОРА ===
 const RECIPES = {
   "Щавлик": { base: 1000, assembly: { "Водка Schmidt": 450, "П/ф сироп щавель": 270, "П/ф раствор яблочной кислоты": 280, "Ароматизатор манго (по вкусу)": 0 }, prep: { "П/ф сироп щавель": { "Сахарный сироп": 1000, "Щавель свежий (г)": 140 } } },
   "Ежевичная": { base: 1000, assembly: { "П/ф Иван чай": 600, "П/ф сироп ежевика": 300, "Р-р яблочной кислоты": 100 }, prep: { "П/ф Иван чай": { "Водка Schmidt": 1000, "Иван чай (г)": 10 }, "П/ф сироп ежевика": { "Сахарный сироп": 1000, "Ежевика с/м (г)": 650 } } },
   "Спотыкач": { base: 1000, assembly: { "П/ф Ч.смородина": 720, "Сахарный сироп": 280 }, prep: { "П/ф Ч.смородина": { "Водка Schmidt": 1000, "Ч.смородина (г)": 800, "Можжевельник (г)": 5 } } },
   "Перцовка": { base: 1000, assembly: { "П/ф перцовая": 880, "Сахарный сироп": 120 }, prep: { "П/ф перцовая": { "Водка Schmidt": 1000, "Чили (г)": 25, "Желт.перец (г)": 100, "Душистый перец (г)": 3, "Тмин (г)": 2 } } },
   "Померанцевка": { base: 1000, assembly: { "П/ф на корках": 700, "Сахарный сироп": 300 }, prep: { "П/ф на корках": { "Водка Schmidt": 1000, "Цедра апельсин (г)": 35, "Цедра лимон (г)": 8, "Мякоть апельсин (г)": 140 } } },
-  "Крамбамбуля": { base: 3255, assembly: { "П/ф Крамбамбуля": 2400, "П/ф Чили": 45, "Сахарный сироп": 510, "Вода": 300 }, prep: { "П/ф Крамбамбуля": { "Водка Schmidt": 2400, "Апельсин корки (г)": 48, "Апельсин мякоть (г)": 384, "Корица (г)": 19.2, "Гвоздика (г)": 4.8, "Душистый перец (г)": 1.92, "Бадьян (г)": 1.92, "Кардамон (г)": 1.92 } } },
+  "Крамбамбуля": { base: 3255, assembly: { "П/ф Крамбамбуля": 2400, "П/ф Чили": 45, "Сахарный сироп": 510, "Вода": 300 }, prep: { "П/ф Крамбаbуля": { "Водка Schmidt": 2400, "Апельсин корки (г)": 48, "Апельсин мякоть (г)": 384, "Корица (г)": 19.2, "Гвоздика (г)": 4.8, "Душистый перец (г)": 1.92, "Бадьян (г)": 1.92, "Кардамон (г)": 1.92 } } },
   "Хреновуха": { base: 1000, assembly: { "П/ф Хреновуха": 920, "Сахарный сироп": 80 }, prep: { "П/ф Хреновуха": { "Водка Schmidt": 700, "Хрен (г)": 70, "Душ.перец (шт)": 7, "Чили (г)": 15 } } },
   "Сумерки": { base: 1000, assembly: { "П/ф Лаванда": 480, "Balance Смор/чер": 360, "Ябл.кордиал": 120, "Вода": 40 }, prep: { "П/ф Лаванда": { "Водка Schmidt": 1000, "Лаванда (г)": 4 } } },
   "Клюковка": { base: 1000, assembly: { "П/ф Настойка Лапсанг": 500, "П/ф Сироп клюква": 500 }, prep: { "П/ф Настойка Лапсанг": { "Водка Schmidt": 500, "Чай лапсанг (г)": 1.5 }, "П/ф Сироп клюква": { "Сахарный сироп": 500, "Клюква (г)": 500, "Соль (г)": 2 } } },
   "Рафалия": { base: 1000, assembly: { "П/ф малина": 40, "П/ф черника": 90, "П/ф клубника": 65, "П/ф вишня": 90, "П/ф клюква": 65, "П/ф черная смородина": 90, "П/ф на корках": 90, "П/ф ябл.кордиал": 110, "Сахарный сироп": 180, "Вода": 180 }, prep: { "П/ф малина": { "Водка Schmidt": 40, "Малина (г)": 18 }, "П/ф черника": { "Водка Schmidt": 90, "Черника (г)": 72 }, "П/ф клубника": { "Водка Schmidt": 65, "Клубника (г)": 52 }, "П/ф вишня": { "Водка Schmidt": 90, "Вишня (г)": 90 }, "П/ф клюква": { "Водка Schmidt": 65, "Клюква (г)": 52 }, "П/ф черная смородина": { "Водка Schmidt": 90, "Ч.смородина (г)": 72 }, "П/ф на корках": { "Водка Schmidt": 90, "Цедра апельсин (г)": 3.15, "Цедра лимон (г)": 0.72, "Мякоть апельсин (г)": 12.6 } } },
-  "Барби": { base: 1015, assembly: { "Водка Schmidt": 300, "Концентрат Richeza черника-мята": 70, "П/ф сироп Черника": 100, "Сироп Richeza дыня": 140, "Сливки 10%": 175, "Молоко": 175, "Вода": 50, "Молочная кислота": 5 } },
+  "Barbie": { base: 1015, assembly: { "Водка Schmidt": 300, "Концентрат Richeza черника-мята": 70, "П/ф сироп Черника": 100, "Сироп Richeza дыня": 140, "Сливки 10%": 175, "Молоко": 175, "Вода": 50, "Молочная кислота": 5 } },
   "Крестный молочник": { base: 720, assembly: { "Виски": 200, "Молоко": 200, "Сливки 10%": 200, "П/ф Медовый сироп": 100, "Сироп попкорн": 20 } },
   "Кэри": { base: 1000, assembly: { "Водка Schmidt": 300, "Balance Киви/Лемонграсс": 500, "Ябл.кордиал": 100, "Вода": 100 } },
   "Минталлика": { base: 1000, assembly: { "Водка Schmidt": 300, "Balance Мята": 500, "Ябл.кордиал": 100, "Вода": 100 } },
@@ -39,17 +39,21 @@ const RECIPES = {
 };
 
 function App() {
-  const [messages, setMessages] = useState([{ role: 'bot', text: 'Салют! На связи Толик — твой кибер-бармен в руин-баре «На дне». 🥃 Столики у нас разлетаются быстрее, чем шоты в пятницу, но я могу придержать для тебя отличное место! А если хочешь знать, под чьи биты будем отрываться и какие спешлы стынут на баре — солью все инсайды. Ну что, забиваем место или сначала изучаем афишу?' }]);
+  const [messages, setMessages] = useState([{ 
+      role: 'bot', 
+      text: 'Салют! На связи твой кибер-бармен Толик - помогу забронировать тебе столик!! Готовы опуститься на "Дно"? Столики "На Дне" разлетаются быстрее, чем шоты в пятницу! Ну что, бронируем или сначала изучим афишу?' 
+  }]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef(null);
 
-  const [wheelState, setWheelState] = useState({ show: false, pendingData: null });
+  // Стейт Колеса: showModal открывает само окно, showButton показывает кнопку под чатом
+  const [wheelState, setWheelState] = useState({ showModal: false, showButton: false, pendingData: null });
   const [spinning, setSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [wonShot, setWonShot] = useState(null);
 
-  // === СОСТОЯНИЯ КАЛЬКУЛЯТОРА ===
+  // Стейты калькулятора сотрудников
   const [isEmployeeMode, setIsEmployeeMode] = useState(false);
   const [showCalc, setShowCalc] = useState(false);
   const [volumes, setVolumes] = useState({});
@@ -57,7 +61,7 @@ function App() {
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, wheelState.showButton]);
 
   const handleSend = async () => {
     if (!input.trim() || loading) return;
@@ -67,7 +71,7 @@ function App() {
 
     if (userText.toLowerCase() === 'режим сотрудника') {
       setIsEmployeeMode(true);
-      setMessages(prev => [...prev, { role: 'bot', text: 'Режим сотрудника активирован. Кнопка базы знаний разблокирована (в правом верхнем углу).' }]);
+      setMessages(prev => [...prev, { role: 'bot', text: 'Режим сотрудника активирован. Кнопка базы знаний разблокирована.' }]);
       setShowCalc(true); 
       return;
     }
@@ -78,14 +82,20 @@ function App() {
         message: userText, history: messages.map(m => ({role: m.role, text: m.text}))
       });
       setMessages(prev => [...prev, { role: 'bot', text: response.data.text }]);
+      
+      // Вместо авто-вызова модалки, сначала просто делаем видимой кнопку под чатом
       if (response.data.showWheel && response.data.telegramData) {
-        setTimeout(() => setWheelState({ show: true, pendingData: response.data.telegramData }), 1000);
+        setWheelState({ showModal: false, showButton: true, pendingData: response.data.telegramData });
       }
     } catch (error) {
       setMessages(prev => [...prev, { role: 'bot', text: 'Упс, сервера сегодня горят. Повтори-ка?' }]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const openWheelModal = () => {
+    setWheelState(prev => ({ ...prev, showModal: true, showButton: false }));
   };
 
   const spinWheel = () => {
@@ -102,17 +112,23 @@ function App() {
       setSpinning(false);
       setWonShot(DRINKS[randomIndex]);
       
-      await axios.post(`${RENDER_URL}/api/telegram`, {
-        telegramData: wheelState.pendingData,
-        wonShot: DRINKS[randomIndex]
-      });
+      // Защищаем отправку в ТГ блоком try/catch, чтобы при сбое сети колесо не висло
+      try {
+          await axios.post(`${RENDER_URL}/api/telegram`, {
+            telegramData: wheelState.pendingData,
+            wonShot: DRINKS[randomIndex]
+          });
+      } catch (e) {
+          console.error("Критическая ошибка отправки брони в ТГ:", e);
+      }
 
       setMessages(prev => [...prev, { role: 'bot', text: `🎉 Выпало: **${DRINKS[randomIndex]}**! Записал, приготовил. Жду вас на баре!` }]);
 
+      // Закрываем окно через 4 секунды после выигрыша
       setTimeout(() => {
-        setWheelState({ show: false, pendingData: null });
+        setWheelState({ showModal: false, showButton: false, pendingData: null });
         setWonShot(null);
-      }, 3500);
+      }, 4000);
     }, 4000);
   };
 
@@ -120,7 +136,6 @@ function App() {
     setVolumes(prev => ({ ...prev, [name]: value }));
   };
 
-  // ЛОГИКА РАСЧЕТА
   const generateCalculation = () => {
     const results = [];
     const warehouseTotals = {};
@@ -133,31 +148,26 @@ function App() {
       const drinkCoef = vol / recipe.base;
       const drinkResult = { name: drinkName, vol: vol, assembly: [], preps: [] };
 
-      // Считаем сборку
       Object.entries(recipe.assembly).forEach(([ing, amount]) => {
-        if (amount === 0 || typeof amount === 'string') return; // Игнорируем "по вкусу" в складе
-        
+        if (amount === 0 || typeof amount === 'string') return;
         const needed = amount * drinkCoef;
         drinkResult.assembly.push({ name: ing, value: needed.toFixed(1).replace('.0', '') });
         
-        // Если это НЕ полуфабрикат, добавляем в ИТОГО СКЛАД
         if (!recipe.prep || !recipe.prep[ing]) {
           warehouseTotals[ing] = (warehouseTotals[ing] || 0) + needed;
         }
       });
 
-      // Считаем заготовки
       if (recipe.prep) {
         Object.entries(recipe.prep).forEach(([prepName, prepIngs]) => {
           const neededPrepVol = recipe.assembly[prepName] * drinkCoef;
-          const basePrepVol = Object.values(prepIngs)[0]; // Берем первую жидкость за базу (всегда 1000)
+          const basePrepVol = Object.values(prepIngs)[0]; 
           const prepCoef = neededPrepVol / basePrepVol;
           
           const rawItems = [];
           Object.entries(prepIngs).forEach(([rawIng, rawAmount]) => {
             const rawNeeded = rawAmount * prepCoef;
             rawItems.push({ name: rawIng, value: rawNeeded.toFixed(1).replace('.0', '') });
-            // Добавляем сырье в ИТОГО СКЛАД
             warehouseTotals[rawIng] = (warehouseTotals[rawIng] || 0) + rawNeeded;
           });
           
@@ -198,19 +208,34 @@ function App() {
             <div className="typing-indicator"><div className="typing-dot"></div><div className="typing-dot"></div><div className="typing-dot"></div></div>
           </div>
         )}
+        
+        {/* КНОПКА ЗАПУСКА КОЛЕСА (показывается прямо в ленте чата) */}
+        {wheelState.showButton && (
+           <div style={{ textAlign: 'center', marginTop: '10px', animation: 'messagePop 0.4s ease forwards' }}>
+             <button onClick={openWheelModal} style={{
+                background: 'linear-gradient(135deg, #7b2cbf 0%, #5a189a 100%)',
+                color: 'white', border: 'none', padding: '15px 30px', borderRadius: '30px',
+                fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', boxShadow: '0 0 20px rgba(123, 44, 191, 0.6)'
+             }}>
+               🎁 Крутить Колесо Фортуны
+             </button>
+           </div>
+        )}
+
         <div ref={chatEndRef} />
       </div>
 
       <div className="input-area">
         <div className="input-wrapper">
-          <input type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleSend()} placeholder="Напиши Толику..." disabled={wheelState.show} />
+          <input type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleSend()} placeholder="Напиши Толику..." disabled={wheelState.showModal} />
         </div>
-        <button className="send-btn" onClick={handleSend} disabled={loading || wheelState.show}>
+        <button className="send-btn" onClick={handleSend} disabled={loading || wheelState.showModal}>
           <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
       </div>
 
-      {wheelState.show && (
+      {/* МОДАЛЬНОЕ ОКНО С КОЛЕСОМ */}
+      {wheelState.showModal && (
         <div className="wheel-modal">
           <div className="wheel-modal-content">
             <h2>Колесо Фортуны</h2>
@@ -233,7 +258,7 @@ function App() {
         </div>
       )}
 
-      {/* === МОДАЛКА КАЛЬКУЛЯТОРА === */}
+      {/* МОДАЛЬНОЕ ОКНО КАЛЬКУЛЯТОРА ДЛЯ БАРМЕНОВ */}
       {showCalc && (
         <div className="calc-modal">
           <div className="calc-modal-content">
@@ -282,11 +307,10 @@ function App() {
                   </div>
                 ))}
 
-                {/* ФИНАЛЬНЫЙ СКЛАДСКОЙ СПИСОК */}
                 <div className="result-card total-card">
                   <h4>📦 ИТОГО СО СКЛАДА</h4>
                   {Object.entries(calcResults.totals)
-                    .sort((a, b) => b[1] - a[1]) // От большего к меньшему
+                    .sort((a, b) => b[1] - a[1]) 
                     .map(([ing, amount]) => (
                     <div key={ing} className="result-item">
                       <span>{ing}</span>
