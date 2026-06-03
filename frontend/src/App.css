@@ -128,7 +128,22 @@ html, body {
 .wheel-container { position: relative; width: 280px; height: 280px; margin: 0 auto 30px auto; }
 .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid #ffffff; z-index: 10; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8)); }
 .wheel-spinner { width: 100%; height: 100%; border-radius: 50%; background: conic-gradient( #7b2cbf 0deg 51.4deg, #5a189a 51.4deg 102.8deg, #3c096c 102.8deg 154.2deg, #240046 154.2deg 205.7deg, #10002b 205.7deg 257.1deg, #9d4edd 257.1deg 308.5deg, #c77dff 308.5deg 360deg ); border: 4px solid #ffffff; box-shadow: 0 0 30px rgba(123, 44, 191, 0.5), inset 0 0 20px rgba(0,0,0,0.5); transition: transform 4s cubic-bezier(0.1, 0.85, 0.25, 1); position: relative; overflow: hidden; }
-.wheel-label { position: absolute; top: 50%; left: 50%; color: #ffffff; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); white-space: nowrap; transform-origin: 0 0; }
+
+/* ИСПРАВЛЕННОЕ ВЫРАВНИВАНИЕ ТЕКСТА НА КОЛЕСЕ */
+.wheel-label { 
+  position: absolute; 
+  top: 50%; 
+  left: 50%; 
+  transform-origin: center; 
+  color: #ffffff; 
+  font-weight: 600; 
+  font-size: 0.75rem; 
+  text-transform: uppercase; 
+  letter-spacing: 1px; 
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.8); 
+  white-space: nowrap; 
+}
+
 .spin-btn { background: linear-gradient(135deg, #7b2cbf 0%, #5a189a 100%); border: none; padding: 16px 30px; border-radius: 30px; color: white; width: 100%; font-weight: bold; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(123, 44, 191, 0.5); cursor: pointer; transition: 0.3s; }
 .spin-btn:active { transform: scale(0.95); }
 .spin-btn.disabled { opacity: 0.5; pointer-events: none; }
