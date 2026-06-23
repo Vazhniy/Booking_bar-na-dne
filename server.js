@@ -50,8 +50,10 @@ const BASE_PROMPT = `
 
 🚨 ГЛАВНОЕ ПРАВИЛО: Отвечай коротко, без "воды", МАКСИМУМ 5 ПРЕДЛОЖЕНИЙ (Но это правило НЕ КАСАЕТСЯ финального чека бронирования, его выдавай полностью!). Но в своем стиле, с долей иронии!
 
-ПРАВИЛА ОБЩЕНИЯ С ГОСТЯМИ: 
-- Не будь навязчивым! Если гость спрашивает про меню или афишу — просто ответь и спроси: "Ну что, переходим к брони стола или есть еще вопросы?"
+ПРАВИЛА ОБЩЕНИЯ С ГОСТЯМИ (НЕ БУДЬ НАВЯЗЧИВЫМ!):
+- В самом начале разговора (если гость только написал) — можешь предложить забронировать стол, это нормально.
+- ДАЛЬШЕ — ПРОСТО ОБЩАЙСЯ. Если гость спрашивает про меню, коктейли или музыку — просто отвечай на вопрос в своем стиле. 
+- НЕ ПРЕДЛАГАЙ БРОНЬ В КАЖДОМ СООБЩЕНИИ! Это бесит гостей. Предлагай бронь ТОЛЬКО если гость сам проявил инициативу (например: "хотим прийти", "а есть места?", "что сегодня вечером?") или когда вы уже обсудили все детали и логично перейти к записи.
 - Если гость отвечает на твой вопрос, не повторяй его.
 
 === РЕЖИМ 1: БРОНИРОВАНИЕ СТОЛА ===
@@ -128,99 +130,4 @@ const BASE_PROMPT = `
 - Минталлика (База 1000): Водка Schmidt 300, Balance Мята 500, Ябл.кордиал 100, Вода 100.
 - Цитрон (База 1000): П/ф Настойка цитрон 600, Сах.сироп 400. [П/ф Настойка цитрон: Водка Schmidt 1000, Лимон корки 50, Лимон мякоть 100].
 - Мандарини (База 1000): П/ф Настойка на корках мандарина 660, Сах.сироп 340. [П/ф Настойка на корках мандарина: Водка Schmidt 1000, Корки мандарин 100, Мякоть мандарин 100].
-- Черрибос (База 1000): П/ф Настойка ройбуш 500, П/ф Сироп вишня 500. [П/ф Настойка ройбуш: Водка Schmidt 1000, Чай ройбуш 20. П/ф Сироп вишня: Сах.сироп 1000, Вишня 800].
-- Тайская (База 1000): П/ф Настойка тайская 880, Сах.сироп 120. [П/ф Настойка тайская: Водка Schmidt 1000, Манго сублим 15, Чили 10].
-- Зубровка (База 1000): П/ф Настойка зубровка 940, Сах.сироп 60. [П/ф Настойка зубровка: Водка Schmidt 1000, Трава зубровка 2].
-- Желе Ананас/кокос (База 1000): Водка Schmidt 250, Balance Ананас/кокос 400, Вода 350, Желатин 30.
-- Желе Земляника/эстрагон (База 1000): Водка Schmidt 250, Balance Земляника/эстрагон 400, Вода 350, Желатин 30.
-- Желе Алоэ/мята (База 1000): Водка Schmidt 250, Balance Алоэ/мята 400, Вода 350, Желатин 30.
-- Яблочный тини (База 1000): Водка Schmidt (белый) 375, Monin зел.яблоко 175, Сироп лемонграсс 250, Р-р ябл.кислоты 200. [Сироп лемонграсс: Сах.сироп 1000, Лемонграсс 120].
-- Мангорита (База 1000): Текила Maxximo 369, Пюре манго 284, Сироп облепиха 57, Сах.сироп 142, Лайм джус 142, Сироп чили 6.
-- Пенициллин (База 1000): Виски Bells 488, Сироп имбирь 170, Суперджус лимон 243, Медовый сироп 99, Виски Laphroaig (пшик на порцию) 1. [Сироп имбирь: Сах.сироп 1000, Имбирь 1000].
-- Бульвар-банан (База 1000): Jim beam 238, Cinzano Bianco 380, Campari 238, Ликер MB Банан 144.
-- Clover Club (База 1000): Джин Kinross 368, Cinzano Extra Dry 100, Сироп Малина 300, Суперджус лимон 232. [Сироп Малина: Малина 500, Сахар 500, Вода 250].
-- Passion sour (База 1000): Водка Schmidt 480, Balance Маракуйя/Ваниль 520, Fluffy drop 5.
-- Negroni (База 105): Джин Kinross 35, Cinzano Rosso 40, Carpano Bitter 30.
-`;
-
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-async function sendMessageWithRetry(chat, message, maxRetries = 3) {
-    for (let attempt = 0; attempt < maxRetries; attempt++) {
-        try {
-            return await chat.sendMessage(message); 
-        } catch (error) {
-            if (attempt === maxRetries - 1) {
-                console.error(`❌ Все попытки исчерпаны. Ошибка:`, error.message);
-                throw error; 
-            }
-            const waitTime = Math.pow(2, attempt) * 1000 + Math.random() * 500; 
-            console.warn(`⚠️ Сервер перегружен. Ждем ${Math.round(waitTime)}мс перед новой попыткой...`);
-            await sleep(waitTime);
-        }
-    }
-}
-
-app.get('/ping', (req, res) => res.status(200).send('Толик на смене!'));
-
-app.post('/api/chat', chatLimiter, async (req, res) => {
-    const { message, history } = req.body;
-    try {
-        let currentEvents = "Новостей пока нет, но алкоголь на месте.";
-        if (SHEET_URL) {
-            try { currentEvents = (await axios.get(SHEET_URL)).data; } catch (e) {}
-        }
-
-        // ЖЕСТКАЯ ГЕНЕРАЦИЯ ТОЧНОГО ВРЕМЕНИ ПО МИНСКУ
-        const options = { timeZone: 'Europe/Minsk', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-        const mskTime = new Intl.DateTimeFormat('ru-RU', options).format(new Date());
-
-        const fullSystemPrompt = `${BASE_PROMPT}\n\n=== ВАЖНО: СИСТЕМНОЕ ВРЕМЯ ===\nТочное время прямо сейчас: ${mskTime} (Минск). Если гость спрашивает время — называй именно эти цифры!\n\n=== АКТУАЛЬНОЕ РАСПИСАНИЕ ===\n${currentEvents}`;
-        
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", systemInstruction: fullSystemPrompt });
-
-        let formattedHistory = history.map(msg => ({
-            role: msg.role === 'bot' ? 'model' : 'user',
-            parts: [{ text: msg.text }]
-        }));
-
-        if (formattedHistory.length > 0 && formattedHistory[0].role === 'model') formattedHistory.shift();
-        if (formattedHistory.length > 6) formattedHistory = formattedHistory.slice(-6);
-
-        const chat = model.startChat({ history: formattedHistory });
-        
-        const result = await sendMessageWithRetry(chat, message);
-        let botResponse = result.response.text();
-
-        let telegramData = null;
-        let showWheel = false;
-
-        if (botResponse.includes("ТЕЛЕГРАМ:")) {
-            const parts = botResponse.split("ТЕЛЕГРАМ:");
-            botResponse = parts[0].trim(); 
-            telegramData = parts[1].trim(); 
-            showWheel = true;
-        }
-
-        res.json({ text: botResponse, showWheel, telegramData });
-    } catch (error) {
-        console.error('Критическая ошибка Gemini:', error);
-        res.status(500).json({ text: 'Упс, сервера сегодня горят. Повтори-ка, что ты сказал?' });
-    }
-});
-
-app.post('/api/telegram', telegramLimiter, async (req, res) => {
-    const { telegramData, wonShot } = req.body;
-    const text = `🔔 **НОВАЯ БРОНЬ "НА ДНЕ"**\n\n👤 Данные:\n${telegramData}\n\n🎁 Выиграли: **${wonShot}**\n📍 Место: Шот-бар На Дне`;
-    try {
-        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-            chat_id: CHAT_ID, text: text, parse_mode: 'Markdown'
-        });
-        res.status(200).json({ success: true });
-    } catch (error) {
-        res.status(500).json({ success: false });
-    }
-});
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ Сервер запущен на порту ${PORT}`));
+- Черрибос (База 1000): П/ф Настойка ройбуш 500, П/ф Сироп вишня 500. [П/ф Настойка ройбуш: Водка Schmidt
