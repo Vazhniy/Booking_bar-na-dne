@@ -149,7 +149,9 @@ html, body {
 
 /* === МЕНЮ СОТРУДНИКА === */
 .employee-menu-container {
-  position: absolute; top: 22px; right: 20px;
+  position: absolute; 
+  top: calc(22px + env(safe-area-inset-top)); /* Динамический отступ под статус-бар */
+  right: 20px;
   z-index: 20;
 }
 
