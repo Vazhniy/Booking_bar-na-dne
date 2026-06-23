@@ -65,6 +65,7 @@ function App() {
   const [wonShot, setWonShot] = useState(null);
 
   const [isEmployeeMode, setIsEmployeeMode] = useState(false);
+  const [showEmployeeMenu, setShowEmployeeMenu] = useState(false);
   const [showCalc, setShowCalc] = useState(false);
   const [volumes, setVolumes] = useState({});
   const [calcResults, setCalcResults] = useState(null);
@@ -81,8 +82,7 @@ function App() {
 
     if (userText.toLowerCase() === 'режим сотрудника') {
       setIsEmployeeMode(true);
-      setMessages(prev => [...prev, { role: 'bot', text: 'Режим сотрудника активирован. Кнопка базы знаний разблокирована.' }]);
-      setShowCalc(true); 
+      setMessages(prev => [...prev, { role: 'bot', text: 'Режим сотрудника активирован. Меню сотрудника доступно в шапке (справа).' }]);
       return;
     }
 
@@ -197,12 +197,32 @@ function App() {
             <p className="bar-address">Зыбицкая, 6</p>
           </div>
           {isEmployeeMode && (
-            <button className="employee-btn" onClick={() => setShowCalc(true)}>🧮 Техкарты</button>
+            <div className="employee-menu-container">
+              <button 
+                className="employee-btn" 
+                onClick={() => setShowEmployeeMenu(!showEmployeeMenu)}
+              >
+                ⚙️ Staff
+              </button>
+              {showEmployeeMenu && (
+                <div className="employee-dropdown">
+                  <button onClick={() => { setShowCalc(true); setShowEmployeeMenu(false); }}>
+                    🧮 Техкарты
+                  </button>
+                  <button onClick={() => { alert('Заполним позже!'); setShowEmployeeMenu(false); }}>
+                    ✅ Чек-листы
+                  </button>
+                  <button onClick={() => { alert('Заполним позже!'); setShowEmployeeMenu(false); }}>
+                    📚 База знаний
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </header>
 
-      <div className="chat-window">
+      <div className="chat-window" onClick={() => setShowEmployeeMenu(false)}>
         {messages.map((msg, i) => (
           <div key={i} className={`message-row ${msg.role}`}>
             {msg.role === 'bot' && <img src="/logo.png" alt="Толик" className="bot-avatar" />}
@@ -231,7 +251,7 @@ function App() {
         <div ref={chatEndRef} />
       </div>
 
-      <div className="input-area">
+      <div className="input-area" onClick={() => setShowEmployeeMenu(false)}>
         <div className="input-wrapper">
           <input type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleSend()} placeholder="Напиши Толику..." disabled={wheelState.showModal} />
         </div>
