@@ -74,22 +74,28 @@ function App() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, wheelState.showButton]);
 
-  const handleSend = async () => {
-    if (!input.trim() || loading) return;
-    const userText = input.trim();
-    setMessages(prev => [...prev, { role: 'user', text: userText }]);
-    setInput('');
+  // Выносим логику отправки сообщения, чтобы использовать её и для новой кнопки
+  const submitUserMessage = async (textToSubmit) => {
+    if (loading) return;
 
-    if (userText.toLowerCase() === 'режим сотрудника') {
+    // Скрытый режим сотрудника
+    if (textToSubmit.toLowerCase() === 'режим сотрудника') {
       setIsEmployeeMode(true);
-      setMessages(prev => [...prev, { role: 'bot', text: 'Режим сотрудника активирован. Меню сотрудника доступно в шапке (справа).' }]);
+      setMessages(prev => [...prev, 
+        { role: 'user', text: textToSubmit }, 
+        { role: 'bot', text: 'Режим сотрудника активирован. Меню сотрудника доступно в шапке (справа).' }
+      ]);
       return;
     }
 
+    setMessages(prev => [...prev, { role: 'user', text: textToSubmit }]);
     setLoading(true);
+
     try {
       const response = await axios.post(`${RENDER_URL}/api/chat`, {
-        message: userText, history: messages.map(m => ({role: m.role, text: m.text}))
+        message: textToSubmit, 
+        // Отправляем историю без системных ошибок
+        history: messages.filter(m => !m.isError).map(m => ({role: m.role, text: m.text}))
       });
       setMessages(prev => [...prev, { role: 'bot', text: response.data.text }]);
       
@@ -97,10 +103,23 @@ function App() {
         setWheelState({ showModal: false, showButton: true, pendingData: response.data.telegramData });
       }
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'bot', text: 'Упс, сервера сегодня горят. Повтори-ка?' }]);
+      // Если сервер не ответил, добавляем флаг ошибки и запоминаем текст
+      setMessages(prev => [...prev, { 
+        role: 'bot', 
+        text: 'Упс, сервера сейчас перегружены. Сообщение не дошло.', 
+        isError: true, 
+        failedMessage: textToSubmit 
+      }]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSend = () => {
+    if (!input.trim() || loading) return;
+    const userText = input.trim();
+    setInput('');
+    submitUserMessage(userText);
   };
 
   const openWheelModal = () => {
@@ -226,7 +245,23 @@ function App() {
         {messages.map((msg, i) => (
           <div key={i} className={`message-row ${msg.role}`}>
             {msg.role === 'bot' && <img src="/logo.png" alt="Толик" className="bot-avatar" />}
-            <div className={`message ${msg.role}`}>{msg.text}</div>
+            
+            {/* Обертка для сообщения и кнопки повтора */}
+            <div className={`message-bubble-wrapper ${msg.role}`}>
+              <div className={`message ${msg.role}`}>{msg.text}</div>
+              
+              {/* Если есть ошибка - показываем кнопку */}
+              {msg.isError && (
+                <button 
+                  className="resend-btn" 
+                  onClick={() => submitUserMessage(msg.failedMessage)}
+                  disabled={loading}
+                >
+                  🔁 Повторить отправку
+                </button>
+              )}
+            </div>
+
           </div>
         ))}
         {loading && (
