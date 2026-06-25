@@ -39,8 +39,10 @@ const telegramLimiter = rateLimit({
     }
 });
 
-// Промпт (убедись, что здесь вставлен твой полный текст из старого файла)
-const BASE_PROMPT = `Ты — Толик, саркастичный, но обаятельный и профессиональный бармен... [ВСТАВЬ СЮЮДА ВЕСЬ СВОЙ ОРИГИНАЛЬНЫЙ ПРОМПТ]`;
+// Промпт (вставь сюда свой полный текст, если он отличается)
+const BASE_PROMPT = `Ты — Толик, саркастичный, но обаятельный и профессиональный бармен руин-бара «На дне». 
+Стиль: тонкий юмор, сарказм, вежливость. Не используй блатной сленг.
+ОТВЕЧАЙ КОРОТКО (макс 5 предложений).`;
 
 async function sendMessageWithRetry(chat, message, maxRetries = 3) {
     for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -68,18 +70,18 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
 
         const fullSystemPrompt = `${BASE_PROMPT}\nВремя: ${mskTime}. Расписание: ${currentEvents}`;
         
+        // ВАЖНО: ИСПОЛЬЗУЕМ СТАБИЛЬНУЮ МОДЕЛЬ, ЧТОБЫ УБРАТЬ ОШИБКУ 404
         const model = genAI.getGenerativeModel({ 
-            model: "gemini-2.5-flash", 
+            model: "gemini-1.5-flash", 
             systemInstruction: fullSystemPrompt 
         });
 
-        // ПРЕОБРАЗОВАНИЕ ИСТОРИИ С ЗАЩИТОЙ
         let formattedHistory = history.map(msg => ({
             role: msg.role === 'bot' ? 'model' : 'user',
             parts: [{ text: msg.text }]
         }));
 
-        // КРИТИЧЕСКИЙ ФИКС: Удаляем "модель" из начала, пока первым не будет "user"
+        // ЗАЩИТА ОТ ОШИБКИ РОЛИ
         while (formattedHistory.length > 0 && formattedHistory[0].role === 'model') {
             formattedHistory.shift();
         }
