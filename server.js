@@ -14,9 +14,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('build'));
 
-// Проверка наличия ключа при старте
 if (!process.env.GEMINI_API_KEY) {
-    console.error("❌ ОШИБКА: GEMINI_API_KEY не задан в переменных окружения!");
+    console.error("❌ ОШИБКА: GEMINI_API_KEY не задан!");
 }
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
@@ -28,9 +27,7 @@ const chatLimiter = rateLimit({
     windowMs: 60 * 1000,
     max: 7,
     handler: (req, res) => {
-        res.status(200).json({
-            text: 'Воу-воу, полегче, пулеметчик! Дай мне минуту перекурить, а то от твоих сообщений у меня шейкер дымится.'
-        });
+        res.status(200).json({ text: 'Воу-воу, полегче, пулеметчик! Дай мне минуту перекурить.' });
     }
 });
 
@@ -42,10 +39,8 @@ const telegramLimiter = rateLimit({
     }
 });
 
-const BASE_PROMPT = `Ты — Толик, саркастичный, но обаятельный и профессиональный бармен руин-бара «На дне». 
-Стиль: тонкий юмор, сарказм, вежливость. Не используй блатной сленг.
-ОТВЕЧАЙ КОРОТКО (макс 5 предложений).
-[Тут остальной твой промпт... сокращено для краткости, но ты вставь свой полный промпт отсюда]`;
+// Промпт (убедись, что здесь вставлен твой полный текст из старого файла)
+const BASE_PROMPT = `Ты — Толик, саркастичный, но обаятельный и профессиональный бармен... [ВСТАВЬ СЮЮДА ВЕСЬ СВОЙ ОРИГИНАЛЬНЫЙ ПРОМПТ]`;
 
 async function sendMessageWithRetry(chat, message, maxRetries = 3) {
     for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -73,16 +68,23 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
 
         const fullSystemPrompt = `${BASE_PROMPT}\nВремя: ${mskTime}. Расписание: ${currentEvents}`;
         
-        // Инициализация модели
         const model = genAI.getGenerativeModel({ 
             model: "gemini-2.5-flash", 
             systemInstruction: fullSystemPrompt 
         });
 
+        // ПРЕОБРАЗОВАНИЕ ИСТОРИИ С ЗАЩИТОЙ
         let formattedHistory = history.map(msg => ({
             role: msg.role === 'bot' ? 'model' : 'user',
             parts: [{ text: msg.text }]
-        })).slice(-6);
+        }));
+
+        // КРИТИЧЕСКИЙ ФИКС: Удаляем "модель" из начала, пока первым не будет "user"
+        while (formattedHistory.length > 0 && formattedHistory[0].role === 'model') {
+            formattedHistory.shift();
+        }
+
+        formattedHistory = formattedHistory.slice(-6);
 
         const chat = model.startChat({ history: formattedHistory });
         const result = await sendMessageWithRetry(chat, message);
